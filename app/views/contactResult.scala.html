@@ -1,0 +1,14 @@
+@(message: String)
+
+@main("Contacto") {
+
+  <div class="alert alert-success">
+    <h4 class="alert-heading">Éxito</h4>
+    <p>@message</p>
+    <hr>
+    <a href="@routes.ContactController.form" class="btn btn-outline-primary">
+      Volver al formulario
+    </a>
+  </div>
+
+}

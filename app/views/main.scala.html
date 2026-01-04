@@ -1,0 +1,48 @@
+@(title: String)(content: Html)
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>@title</title>
+    <link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/main.css")'>
+      <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- NAVBAR SUPERIOR -->
+<header class="top-nav">
+    <div class="nav-container">
+
+        <div class="brand">
+            <img 
+                src='@routes.Assets.versioned("images/mi.png")'
+                alt="Federico Pfund"
+                class="brand-logo"
+            />
+        </div>
+
+        <nav class="nav-links">
+            <a href="/">Perfil</a>
+            <a href="/portfolio">Portafolio</a>
+            <a href="/publications">Publicaciones</a>
+            <a href="/blog">Blog</a>
+            <a href="/ideas">Ideas</a>
+            <a href="/contact">Contacto</a>
+        </nav>
+
+    </div>
+</header>
+
+<!-- CONTENIDO -->
+<main class="page-content">
+    @content
+</main>
+
+@footer()
+
+</body>
+</html>
+

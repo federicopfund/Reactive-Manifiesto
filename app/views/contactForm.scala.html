@@ -1,0 +1,35 @@
+@(form: Form[ContactData])
+
+@main("Contacto") {
+
+  <h1>Formulario de Contacto</h1>
+
+  @form.globalError.map { e =>
+    <p style="color:red">@e.message</p>
+  }
+
+  @helper.form(routes.ContactController.submit) {
+
+    
+
+    <div>
+      <label>Nombre</label>
+      <input type="text" name="name" value="@form("name").value.getOrElse("")">
+      @form("name").error.map(e => <span>@e.message</span>)
+    </div>
+
+    <div>
+      <label>Email</label>
+      <input type="email" name="email" value="@form("email").value.getOrElse("")">
+      @form("email").error.map(e => <span>@e.message</span>)
+    </div>
+
+    <div>
+      <label>Mensaje</label>
+      <textarea name="message">@form("message").value.getOrElse("")</textarea>
+      @form("message").error.map(e => <span>@e.message</span>)
+    </div>
+
+    <button type="submit">Enviar</button>
+  }
+}
