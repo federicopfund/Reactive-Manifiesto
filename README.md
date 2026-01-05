@@ -759,7 +759,6 @@ La aplicación se adapta perfectamente a diferentes tamaños de pantalla:
 - **Tablet**: 768px - 1023px
 - **Desktop**: 1024px+
 
-![Mobile View](https://github.com/user-attachments/assets/5e2460c1-2f6f-4fa6-a7ec-28eb3e8e6740)
 
 ## 🧪 Testing
 
