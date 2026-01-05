@@ -1,14 +1,61 @@
-@(message: String)
+@(title: String, message: String, success: Boolean)
 
-@main("Contacto") {
+@main(if(success) "Mensaje Enviado" else "Error") {
 
-  <div class="alert alert-success">
-    <h4 class="alert-heading">Éxito</h4>
-    <p>@message</p>
-    <hr>
-    <a href="@routes.ContactController.form" class="btn btn-outline-primary">
-      Volver al formulario
-    </a>
-  </div>
+  <section class="result-section">
+    
+    <div class="result-container @if(success) {result-success} else {result-error}">
+      
+      <div class="result-icon">
+        @if(success) {
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        } else {
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        }
+      </div>
+
+      <h1 class="result-title">@title</h1>
+      
+      <p class="result-message">@message</p>
+
+      @if(success) {
+        <div class="result-details">
+          <p>Gracias por tu mensaje. Nuestro sistema reactivo lo ha recibido y procesará tu solicitud lo antes posible.</p>
+          <p><strong>Respuesta estimada:</strong> 24-48 horas hábiles</p>
+        </div>
+      } else {
+        <div class="result-details">
+          <p>Si el problema persiste, por favor intenta nuevamente más tarde o contacta directamente al administrador del sistema.</p>
+        </div>
+      }
+
+      <div class="result-actions">
+        @if(success) {
+          <a href="/" class="btn btn-primary">Volver al inicio</a>
+          <a href="/contact" class="btn btn-secondary">Enviar otro mensaje</a>
+        } else {
+          <a href="/contact" class="btn btn-primary">Intentar nuevamente</a>
+          <a href="/" class="btn btn-secondary">Volver al inicio</a>
+        }
+      </div>
+
+      <div class="result-info">
+        <h3>Sistema Reactivo</h3>
+        <p class="info-small">
+          Este sistema implementa los principios del Manifiesto Reactivo, garantizando 
+          respuestas consistentes y un manejo resiliente de los mensajes.
+        </p>
+      </div>
+
+    </div>
+
+  </section>
 
 }

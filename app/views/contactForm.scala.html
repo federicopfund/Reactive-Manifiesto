@@ -1,35 +1,133 @@
 @(form: Form[ContactData])
 
-@main("Contacto") {
+@main("Contacto - Formulario Reactivo") {
 
-  <h1>Formulario de Contacto</h1>
-
-  @form.globalError.map { e =>
-    <p style="color:red">@e.message</p>
-  }
-
-  @helper.form(routes.ContactController.submit) {
-
+  <section class="contact-section">
     
+    <header class="contact-header">
+      <h1>Formulario de Contacto</h1>
+      <p class="section-intro">
+        Este formulario utiliza principios del Manifiesto Reactivo para garantizar 
+        una experiencia rápida, resiliente y responsiva.
+      </p>
+    </header>
 
-    <div>
-      <label>Nombre</label>
-      <input type="text" name="name" value="@form("name").value.getOrElse("")">
-      @form("name").error.map(e => <span>@e.message</span>)
+    @form.globalError.map { e =>
+      <div class="alert alert-error" role="alert">
+        <strong>Error:</strong> @e.message
+      </div>
+    }
+
+    <div class="contact-form-container">
+      @helper.form(routes.ContactController.submit, Symbol("class") -> "reactive-form", Symbol("id") -> "contactForm") {
+        
+        @helper.CSRF.formField
+
+        <div class="form-group">
+          <label for="name" class="form-label">
+            Nombre completo <span class="required">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="name"
+            name="name" 
+            class="form-control @if(form("name").hasErrors) {form-control-error}"
+            value="@form("name").value.getOrElse("")"
+            placeholder="Ingresa tu nombre completo"
+            required
+            minlength="2"
+            maxlength="100"
+            aria-describedby="name-help"
+          >
+          <small id="name-help" class="form-text">Mínimo 2 caracteres, máximo 100</small>
+          @form("name").error.map { e => 
+            <span class="error-message" role="alert">@e.message</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="email" class="form-label">
+            Correo electrónico <span class="required">*</span>
+          </label>
+          <input 
+            type="email" 
+            id="email"
+            name="email" 
+            class="form-control @if(form("email").hasErrors) {form-control-error}"
+            value="@form("email").value.getOrElse("")"
+            placeholder="tu@email.com"
+            required
+            aria-describedby="email-help"
+          >
+          <small id="email-help" class="form-text">Usaremos este email para responderte</small>
+          @form("email").error.map { e => 
+            <span class="error-message" role="alert">@e.message</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="subject" class="form-label">
+            Asunto <span class="optional">(opcional)</span>
+          </label>
+          <input 
+            type="text" 
+            id="subject"
+            name="subject" 
+            class="form-control"
+            value="@form("subject").value.flatten.getOrElse("")"
+            placeholder="Tema de tu consulta"
+            maxlength="200"
+            aria-describedby="subject-help"
+          >
+          <small id="subject-help" class="form-text">Máximo 200 caracteres</small>
+        </div>
+
+        <div class="form-group">
+          <label for="message" class="form-label">
+            Mensaje <span class="required">*</span>
+          </label>
+          <textarea 
+            id="message"
+            name="message" 
+            class="form-control @if(form("message").hasErrors) {form-control-error}"
+            rows="6"
+            placeholder="Escribe tu mensaje aquí..."
+            required
+            minlength="10"
+            maxlength="5000"
+            aria-describedby="message-help"
+          >@form("message").value.getOrElse("")</textarea>
+          <small id="message-help" class="form-text">Mínimo 10 caracteres, máximo 5000</small>
+          @form("message").error.map { e => 
+            <span class="error-message" role="alert">@e.message</span>
+          }
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">
+            <span class="btn-text">Enviar mensaje</span>
+            <span class="btn-loader" style="display: none;">Enviando...</span>
+          </button>
+          <button type="reset" class="btn btn-secondary">
+            Limpiar formulario
+          </button>
+        </div>
+
+        <div class="form-info">
+          <p class="info-text">
+            <strong>Principios Reactivos aplicados:</strong>
+          </p>
+          <ul class="reactive-principles">
+            <li><strong>Responsivo:</strong> Validación inmediata y respuestas rápidas</li>
+            <li><strong>Resiliente:</strong> Manejo robusto de errores y recuperación</li>
+            <li><strong>Elástico:</strong> Capaz de manejar cargas variables</li>
+            <li><strong>Orientado a Mensajes:</strong> Comunicación asíncrona entre componentes</li>
+          </ul>
+        </div>
+
+      }
     </div>
 
-    <div>
-      <label>Email</label>
-      <input type="email" name="email" value="@form("email").value.getOrElse("")">
-      @form("email").error.map(e => <span>@e.message</span>)
-    </div>
+  </section>
 
-    <div>
-      <label>Mensaje</label>
-      <textarea name="message">@form("message").value.getOrElse("")</textarea>
-      @form("message").error.map(e => <span>@e.message</span>)
-    </div>
-
-    <button type="submit">Enviar</button>
-  }
 }
