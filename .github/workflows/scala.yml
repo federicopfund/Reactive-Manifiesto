@@ -24,19 +24,13 @@ jobs:
         distribution: 'temurin'
         cache: 'sbt'
 
-    - name: Install sbt
-      run: |
-        # Install sbt from official GitHub releases (adjust version if needed)
-        SBT_VERSION=1.9.9
-        curl -L -o sbt.deb "https://github.com/sbt/sbt/releases/download/v${SBT_VERSION}/sbt-${SBT_VERSION}.deb"
-        sudo dpkg -i sbt.deb || sudo apt-get -f install -y
-        sudo apt-get update
-        sudo apt-get install -y sbt
-        rm -f sbt.deb
+    - name: Setup Scala and sbt
+      uses: coursier/setup-action@v1
+      with:
+        sbt-version: 1.9.9  # Puedes ajustar esta versión según tus necesidades
 
     - name: Run tests
       run: sbt test
 
-    # Optional: This step uploads information to the GitHub dependency graph and unblocking Dependabot alerts for the repository
     - name: Upload dependency graph
       uses: scalacenter/sbt-dependency-submission@ab086b50c947c9774b70f39fc7f6e20ca2706c91
