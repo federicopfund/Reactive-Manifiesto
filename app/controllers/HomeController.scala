@@ -5,18 +5,21 @@ import play.api._
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
+import play.api.i18n.I18nSupport
 import services.ReactiveContactAdapter
 import core.{Contact, ContactSubmitted, ContactError}
 import scala.concurrent.{ExecutionContext, Future}
+
+// Form data case class (outside controller for Twirl template access)
+case class ContactFormData(name: String, email: String, message: String)
 
 @Singleton
 class HomeController @Inject()(
   val controllerComponents: ControllerComponents,
   adapter: ReactiveContactAdapter
-)(implicit ec: ExecutionContext) extends BaseController {
+)(implicit ec: ExecutionContext) extends BaseController with I18nSupport {
 
   // Form definition
-  case class ContactFormData(name: String, email: String, message: String)
 
   val contactForm: Form[ContactFormData] = Form(
     mapping(

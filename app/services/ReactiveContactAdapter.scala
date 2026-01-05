@@ -13,7 +13,7 @@ import scala.concurrent.duration._
 class ReactiveContactAdapter @Inject()(system: ActorSystem[ContactCommand])(implicit ec: ExecutionContext) {
   
   implicit val timeout: Timeout = 5.seconds
-  implicit val scheduler = system.scheduler
+  implicit val scheduler: akka.actor.typed.Scheduler = system.scheduler
 
   def submitContact(contact: Contact): Future[ContactResponse] = {
     system.ask[ContactResponse](replyTo => SubmitContact(contact, replyTo))

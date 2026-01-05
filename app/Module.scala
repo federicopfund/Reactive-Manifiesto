@@ -2,6 +2,7 @@ import akka.actor.typed.ActorSystem
 import com.google.inject.{AbstractModule, Provides, Singleton}
 import core._
 import services.ReactiveContactAdapter
+import scala.concurrent.ExecutionContext
 
 class Module extends AbstractModule {
 
@@ -12,6 +13,6 @@ class Module extends AbstractModule {
 
   @Provides
   @Singleton
-  def provideAdapter(system: ActorSystem[ContactCommand]): ReactiveContactAdapter =
+  def provideAdapter(system: ActorSystem[ContactCommand])(implicit ec: ExecutionContext): ReactiveContactAdapter =
     new ReactiveContactAdapter(system)
 }

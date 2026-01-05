@@ -1,4 +1,6 @@
-@(contactForm: Form[controllers.HomeController.ContactFormData])(implicit request: RequestHeader, messages: Messages)
+@import controllers.ContactFormData
+
+@(contactForm: Form[ContactFormData])(implicit request: RequestHeader, messages: Messages)
 
 @main("Inicio") {
     <!-- Flash Messages -->
@@ -116,7 +118,7 @@
                             name="email" 
                             value="@contactForm("email").value"
                             class="form-input @if(contactForm("email").hasErrors) {form-input-error}"
-                            placeholder="tu@email.com"
+                            placeholder="tu@@email.com"
                             required
                         >
                         @contactForm("email").errors.map { error =>
