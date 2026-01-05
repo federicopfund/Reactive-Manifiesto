@@ -24,10 +24,16 @@ jobs:
         distribution: 'temurin'
         cache: 'sbt'
 
-    - name: Setup Scala and sbt
-      uses: coursier/setup-action@v1
-      with:
-        sbt-version: 1.9.9  # Puedes ajustar esta versión según tus necesidades
+    # Instalar sbt de manera explícita con un paquete tgz
+    - name: Install sbt
+      run: |
+        curl -L -o /tmp/sbt.tgz https://github.com/sbt/sbt/releases/download/v1.9.9/sbt-1.9.9.tgz
+        sudo tar -xzf /tmp/sbt.tgz -C /usr/local
+        echo "/usr/local/sbt/bin" >> $GITHUB_PATH
+
+    # Comprobar que sbt está correctamente instalado
+    - name: Check sbt Version
+      run: sbt --version
 
     - name: Run clean
       run: sbt clean
