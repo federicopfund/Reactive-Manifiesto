@@ -48,7 +48,8 @@ final class ReactiveContactAdapter(system: ActorSystem[ContactCommand]) {
           Right(())
         case ContactRejected(reason) => 
           Left(reason)
-        case _ => 
+        case response => 
+          system.log.warn(s"Unexpected response from ContactEngine: $response")
           Left("Respuesta inesperada del sistema")
       }
       .recover {

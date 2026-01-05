@@ -115,6 +115,6 @@ object ContactEngine {
     Behaviors.supervise(apply())
       .onFailure[Exception](
         SupervisorStrategy.restart
-          .withLimit(maxNrOfRetries = 3, withinTimeRange = scala.concurrent.duration.Duration(1, "minute"))
+          .withLimit(maxNrOfRetries = 3, withinTimeRange = 1.minute)
       )
 }
