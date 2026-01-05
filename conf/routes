@@ -7,6 +7,16 @@ GET     /ideas                  controllers.ProfileController.ideas
 GET   /contact                  controllers.ContactController.form
 POST  /contact                  controllers.ContactController.submit
 
+# Reactive Async Data Endpoints
+GET     /api/data                       controllers.AsyncDataController.getData
+GET     /api/data/combined              controllers.AsyncDataController.getCombinedData
+GET     /api/data/with-error-handling   controllers.AsyncDataController.getDataWithErrorHandling
+
+# Reactive Streaming Endpoints (Server-Sent Events)
+GET     /api/stream/events              controllers.StreamController.streamEvents
+GET     /api/stream/sensors             controllers.StreamController.streamSensorData
+GET     /api/stream/notifications       controllers.StreamController.streamNotifications
+GET     /api/stream/backpressure        controllers.StreamController.streamWithBackpressure
 
 # Assets
 GET     /assets/*file           controllers.Assets.versioned(path="/public", file: Asset)

@@ -14,6 +14,7 @@ libraryDependencies ++= Seq(
 
   // Reactive Manifesto - Core message-driven
   "com.typesafe.akka" %% "akka-actor-typed" % "2.8.5",
+  "com.typesafe.akka" %% "akka-stream" % "2.8.5",
 
   // Testing
   "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.0" % Test
