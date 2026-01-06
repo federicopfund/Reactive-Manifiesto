@@ -1,0 +1,358 @@
+@(contacts: Seq[models.ContactRecord], username: String, currentPage: Int, totalPages: Int, searchQuery: Option[String])(implicit request: RequestHeader, flash: Flash)
+
+@admin.adminLayout("Dashboard") {
+    <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <h2 style="font-size: 2rem; color: #333; margin-bottom: 0.5rem;">Dashboard de Contactos</h2>
+            <p style="color: #666;">Bienvenido, <strong>@username</strong></p>
+        </div>
+        <a href="@routes.AdminController.createContactPage()" class="btn btn-primary">
+            ➕ Nuevo Contacto
+        </a>
+    </div>
+
+    @defining({
+        val allContacts = contacts
+        val total = allContacts.length
+        val pending = allContacts.count(_.status == "pending")
+        val processed = allContacts.count(_.status == "processed")
+        val archived = allContacts.count(_.status == "archived")
+        (total, pending, processed, archived)
+    }) { case (total, pending, processed, archived) =>
+        <!-- Tarjetas de Estadísticas -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+            <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center;">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">📊</div>
+                <div style="font-size: 2.5rem; font-weight: bold; margin-bottom: 0.5rem;">@total</div>
+                <div style="opacity: 0.9;">Total Contactos</div>
+            </div>
+            
+            <div class="card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; text-align: center;">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">🕐</div>
+                <div style="font-size: 2.5rem; font-weight: bold; margin-bottom: 0.5rem;">@pending</div>
+                <div style="opacity: 0.9;">Pendientes</div>
+            </div>
+            
+            <div class="card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; text-align: center;">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">✓</div>
+                <div style="font-size: 2.5rem; font-weight: bold; margin-bottom: 0.5rem;">@processed</div>
+                <div style="opacity: 0.9;">Procesados</div>
+            </div>
+            
+            <div class="card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; text-align: center;">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">📁</div>
+                <div style="font-size: 2.5rem; font-weight: bold; margin-bottom: 0.5rem;">@archived</div>
+                <div style="opacity: 0.9;">Archivados</div>
+            </div>
+        </div>
+
+        <!-- Gráficos -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+            <!-- Gráfico de Pastel - Estados -->
+            <div class="card">
+                <h3 style="margin-bottom: 1.5rem; color: #333;">📊 Distribución por Estado</h3>
+                <canvas id="statusChart" style="max-height: 300px;"></canvas>
+            </div>
+            
+            <!-- Gráfico de Barras - Resumen -->
+            <div class="card">
+                <h3 style="margin-bottom: 1.5rem; color: #333;">📈 Resumen General</h3>
+                <canvas id="summaryChart" style="max-height: 300px;"></canvas>
+            </div>
+        </div>
+
+        <!-- Gráfico de Línea - Tendencia Temporal -->
+        <div class="card" style="margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 1.5rem; color: #333;">📅 Actividad Temporal</h3>
+            <canvas id="timelineChart" style="max-height: 250px;"></canvas>
+        </div>
+    }
+    
+    <div class="card">
+        <div class="search-bar" style="margin-bottom: 1.5rem;">
+            <form method="GET" action="@routes.AdminController.dashboard(0, None)" style="display: flex; gap: 1rem;">
+                <input 
+                    type="text" 
+                    name="search" 
+                    placeholder="Buscar por nombre, email o mensaje..." 
+                    value="@searchQuery.getOrElse("")"
+                    style="flex: 1; padding: 0.75rem; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem;"
+                />
+                <button type="submit" class="btn btn-primary">🔍 Buscar</button>
+                @if(searchQuery.isDefined) {
+                    <a href="@routes.AdminController.dashboard(0, None)" class="btn btn-secondary">✕ Limpiar</a>
+                }
+            </form>
+        </div>
+        
+        @if(contacts.isEmpty) {
+            <div style="text-align: center; padding: 3rem; color: #666;">
+                <p style="font-size: 1.2rem;">No hay contactos registrados</p>
+            </div>
+        } else {
+            <div class="table-responsive" style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                            <th style="padding: 1rem; text-align: left; font-weight: 600;">ID</th>
+                            <th style="padding: 1rem; text-align: left; font-weight: 600;">Nombre</th>
+                            <th style="padding: 1rem; text-align: left; font-weight: 600;">Email</th>
+                            <th style="padding: 1rem; text-align: left; font-weight: 600;">Mensaje</th>
+                            <th style="padding: 1rem; text-align: left; font-weight: 600;">Estado</th>
+                            <th style="padding: 1rem; text-align: left; font-weight: 600;">Fecha</th>
+                            <th style="padding: 1rem; text-align: center; font-weight: 600;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for(contact <- contacts) {
+                            <tr style="border-bottom: 1px solid #e9ecef;">
+                                <td style="padding: 1rem;">@contact.id.getOrElse("-")</td>
+                                <td style="padding: 1rem; font-weight: 500;">@contact.name</td>
+                                <td style="padding: 1rem;">@contact.email</td>
+                                <td style="padding: 1rem; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                    @contact.message.take(50)@if(contact.message.length > 50) { ... }
+                                </td>
+                                <td style="padding: 1rem;">
+                                    <span style="padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: 500; 
+                                        @contact.status match {
+                                            case "pending" => { background: #fff3cd; color: #856404; }
+                                            case "processed" => { background: #d1ecf1; color: #0c5460; }
+                                            case "archived" => { background: #d4edda; color: #155724; }
+                                            case _ => { background: #f8d7da; color: #721c24; }
+                                        }">
+                                        @contact.status match {
+                                            case "pending" => { 🕐 Pendiente }
+                                            case "processed" => { ✓ Procesado }
+                                            case "archived" => { 📁 Archivado }
+                                            case _ => { @contact.status }
+                                        }
+                                    </span>
+                                </td>
+                                <td style="padding: 1rem; font-size: 0.9rem; color: #666;">
+                                    @{
+                                        val formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
+                                        contact.createdAt.atZone(java.time.ZoneId.systemDefault()).format(formatter)
+                                    }
+                                </td>
+                                <td style="padding: 1rem; text-align: center;">
+                                    <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                                        <a href="@routes.AdminController.viewContact(contact.id.get)" 
+                                           class="btn btn-secondary" 
+                                           style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">
+                                            👁️ Ver
+                                        </a>
+                                        <a href="@routes.AdminController.editContactPage(contact.id.get)" 
+                                           class="btn btn-primary" 
+                                           style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">
+                                            ✏️ Editar
+                                        </a>
+                                        <form method="POST" 
+                                              action="@routes.AdminController.deleteContact(contact.id.get)" 
+                                              style="display: inline;"
+                                              onsubmit="return confirm('¿Estás seguro de eliminar este contacto?');">
+                                            @helper.CSRF.formField
+                                            <button type="submit" class="btn btn-danger" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">
+                                                🗑️ Eliminar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            
+            @if(totalPages > 1) {
+                <div class="pagination" style="display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin-top: 2rem;">
+                    @if(currentPage > 0) {
+                        <a href="@routes.AdminController.dashboard(currentPage - 1, searchQuery)" class="btn btn-secondary">
+                            ← Anterior
+                        </a>
+                    }
+                    
+                    <span style="padding: 0.6rem 1rem; color: #666;">
+                        Página @{currentPage + 1} de @totalPages
+                    </span>
+                    
+                    @if(currentPage < totalPages - 1) {
+                        <a href="@routes.AdminController.dashboard(currentPage + 1, searchQuery)" class="btn btn-secondary">
+                            Siguiente →
+                        </a>
+                    }
+                </div>
+            }
+        }
+    </div>
+
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@@4.4.1/dist/chart.umd.js"></script>
+    
+    <!-- Datos generados dinámicamente por Twirl (Scala Template Engine) -->
+    <script>
+        const pending = @{contacts.count(_.status == "pending")};
+        const processed = @{contacts.count(_.status == "processed")};
+        const archived = @{contacts.count(_.status == "archived")};
+        const total = @{contacts.length};
+        
+        // Calcular contactos temporales
+        const allContacts = @Html(play.api.libs.json.Json.toJson(contacts.map(c => 
+            play.api.libs.json.Json.obj(
+                "createdAt" -> c.createdAt.toString(),
+                "status" -> c.status
+            )
+        )).toString());
+        
+        const now = new Date();
+        const today = allContacts.filter(c => {
+            const cDate = new Date(c.createdAt);
+            return cDate.toDateString() === now.toDateString();
+        }).length;
+        
+        const thisWeek = allContacts.filter(c => {
+            const cDate = new Date(c.createdAt);
+            const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            return cDate >= weekAgo;
+        }).length;
+        
+        const thisMonth = allContacts.filter(c => {
+            const cDate = new Date(c.createdAt);
+            return cDate.getMonth() === now.getMonth() && cDate.getFullYear() === now.getFullYear();
+        }).length;
+
+        // Colores del tema
+        const colors = {
+            pending: '#f5576c',
+            processed: '#00f2fe',
+            archived: '#38f9d7',
+            primary: '#667eea'
+        };
+
+        // Configuración común
+        const chartConfig = {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'bottom'
+                }
+            }
+        };
+
+        // 1. Gráfico de Pastel - Estados
+        const statusCtx = document.getElementById('statusChart').getContext('2d');
+        new Chart(statusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Pendientes', 'Procesados', 'Archivados'],
+                datasets: [{
+                    data: [pending, processed, archived],
+                    backgroundColor: [
+                        colors.pending,
+                        colors.processed,
+                        colors.archived
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                ...chartConfig,
+                cutout: '60%',
+                plugins: {
+                    ...chartConfig.plugins,
+                    legend: {
+                        ...chartConfig.plugins.legend,
+                        labels: {
+                            padding: 15,
+                            font: { size: 12 }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 2. Gráfico de Barras - Resumen
+        const summaryCtx = document.getElementById('summaryChart').getContext('2d');
+        new Chart(summaryCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Pendientes', 'Procesados', 'Archivados'],
+                datasets: [{
+                    label: 'Cantidad',
+                    data: [pending, processed, archived],
+                    backgroundColor: [
+                        colors.pending,
+                        colors.processed,
+                        colors.archived
+                    ],
+                    borderRadius: 8,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                ...chartConfig,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                },
+                plugins: {
+                    ...chartConfig.plugins,
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // 3. Gráfico de Línea - Tendencia Temporal
+        const timelineCtx = document.getElementById('timelineChart').getContext('2d');
+        new Chart(timelineCtx, {
+            type: 'line',
+            data: {
+                labels: ['Hoy', 'Esta Semana', 'Este Mes', 'Total'],
+                datasets: [{
+                    label: 'Contactos',
+                    data: [today, thisWeek, thisMonth, total],
+                    borderColor: colors.primary,
+                    backgroundColor: colors.primary + '20',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    pointBackgroundColor: colors.primary,
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                ...chartConfig,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                },
+                plugins: {
+                    ...chartConfig.plugins,
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'Contactos: ' + context.parsed.y;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        console.log('📊 Gráficos cargados exitosamente');
+        console.log('Total:', total, '| Pendientes:', pending, '| Procesados:', processed, '| Archivados:', archived);
+    </script>
+}

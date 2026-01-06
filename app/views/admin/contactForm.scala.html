@@ -1,0 +1,84 @@
+@(form: Form[controllers.ContactForm], contactId: Option[Long])(implicit request: RequestHeader, flash: Flash)
+
+@admin.adminLayout(if(contactId.isDefined) "Editar Contacto" else "Nuevo Contacto") {
+    <div style="margin-bottom: 2rem;">
+        <a href="@routes.AdminController.dashboard(0, None)" style="color: #667eea; text-decoration: none;">
+            ← Volver al Dashboard
+        </a>
+    </div>
+    
+    <div class="card" style="max-width: 800px;">
+        <h2 style="font-size: 1.8rem; color: #333; margin-bottom: 2rem;">
+            @if(contactId.isDefined) { Editar Contacto } else { Crear Nuevo Contacto }
+        </h2>
+        
+        <form method="POST" action="@routes.AdminController.createContact()">
+            @helper.CSRF.formField
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label for="name" style="display: block; font-weight: 600; color: #333; margin-bottom: 0.5rem;">
+                    Nombre <span style="color: #dc3545;">*</span>
+                </label>
+                <input 
+                    type="text" 
+                    id="name" 
+                    name="name" 
+                    required
+                    value="@form("name").value.getOrElse("")"
+                    style="width: 100%; padding: 0.75rem; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem;"
+                />
+                @if(form("name").hasErrors) {
+                    <div style="color: #dc3545; margin-top: 0.5rem; font-size: 0.9rem;">
+                        @form("name").errors.map(_.message).mkString(", ")
+                    </div>
+                }
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label for="email" style="display: block; font-weight: 600; color: #333; margin-bottom: 0.5rem;">
+                    Email <span style="color: #dc3545;">*</span>
+                </label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    required
+                    value="@form("email").value.getOrElse("")"
+                    style="width: 100%; padding: 0.75rem; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem;"
+                />
+                @if(form("email").hasErrors) {
+                    <div style="color: #dc3545; margin-top: 0.5rem; font-size: 0.9rem;">
+                        @form("email").errors.map(_.message).mkString(", ")
+                    </div>
+                }
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label for="message" style="display: block; font-weight: 600; color: #333; margin-bottom: 0.5rem;">
+                    Mensaje <span style="color: #dc3545;">*</span>
+                </label>
+                <textarea 
+                    id="message" 
+                    name="message" 
+                    rows="6"
+                    required
+                    style="width: 100%; padding: 0.75rem; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem; resize: vertical;"
+                >@form("message").value.getOrElse("")</textarea>
+                @if(form("message").hasErrors) {
+                    <div style="color: #dc3545; margin-top: 0.5rem; font-size: 0.9rem;">
+                        @form("message").errors.map(_.message).mkString(", ")
+                    </div>
+                }
+            </div>
+            
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button type="submit" class="btn btn-primary">
+                    💾 Guardar Contacto
+                </button>
+                <a href="@routes.AdminController.dashboard(0, None)" class="btn btn-secondary">
+                    ✕ Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+}
