@@ -1,0 +1,256 @@
+@(user: models.User)(implicit request: RequestHeader, flash: Flash)
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - @user.fullName</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .navbar h1 {
+            font-size: 1.5rem;
+        }
+        
+        .navbar-menu {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .navbar-menu a {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+        
+        .navbar-menu a:hover {
+            opacity: 0.8;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .welcome-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .welcome-card h2 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        
+        .stat-card .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card h3 {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .flash-message {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        .flash-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        @@keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <h1>👤 Dashboard de Usuario</h1>
+            <div class="navbar-menu">
+                <a href="@routes.AuthController.userProfile()">Mi Perfil</a>
+                <a href="@routes.HomeController.index()">Inicio</a>
+                <a href="@routes.AuthController.logout()">Cerrar Sesión</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        @if(flash.get("success").isDefined) {
+            <div class="flash-message flash-success">
+                ✓ @flash.get("success").get
+            </div>
+        }
+        
+        <div class="welcome-card">
+            <h2>¡Bienvenido, @user.fullName! 👋</h2>
+            <p style="color: #666;">Aquí puedes gestionar tu cuenta y acceder a contenido exclusivo.</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="icon">📚</div>
+                <h3>Artículos Disponibles</h3>
+                <div class="value">6</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="icon">⭐</div>
+                <h3>Tu Rol</h3>
+                <div class="value" style="font-size: 1.5rem; text-transform: capitalize;">@user.role</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="icon">📅</div>
+                <h3>Miembro Desde</h3>
+                <div class="value" style="font-size: 1.2rem;">
+                    @{
+                        val formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")
+                        user.createdAt.atZone(java.time.ZoneId.systemDefault()).format(formatter)
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico de Actividad -->
+        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-top: 2rem;">
+            <h3 style="margin-bottom: 1.5rem; color: #333;">📈 Tu Actividad</h3>
+            <canvas id="activityChart" style="max-height: 300px;"></canvas>
+        </div>
+    </div>
+
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@@4.4.1/dist/chart.umd.js"></script>
+    
+    <script>
+        const ctx = document.getElementById('activityChart').getContext('2d');
+        const createdAt = new Date('@user.createdAt');
+        const now = new Date();
+        const daysSinceRegistration = Math.floor((now - createdAt) / (1000 * 60 * 60 * 24));
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Esta Semana'],
+                datasets: [{
+                    label: 'Visitas',
+                    data: [12, 19, 15, 25, 22],
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    pointBackgroundColor: '#667eea',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2
+                }, {
+                    label: 'Artículos Leídos',
+                    data: [5, 8, 6, 10, 9],
+                    borderColor: '#764ba2',
+                    backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    pointBackgroundColor: '#764ba2',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: { size: 12 }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+        
+        console.log('📊 Dashboard de usuario cargado');
+        console.log('Días desde registro:', daysSinceRegistration);
+    </script>
+</body>
+</html>
+
