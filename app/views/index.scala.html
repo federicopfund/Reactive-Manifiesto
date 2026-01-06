@@ -34,67 +34,80 @@
     <!-- Principles Section -->
     <section id="principles" class="principles">
         <div class="container">
-            <h2 class="section-title">Los 4 Pilares del Manifiesto Reactivo</h2>
+            <h2 class="section-title">
+                Los 4 Pilares del Manifiesto Reactivo
+                <span class="graph-icon-trigger" id="graphIconTrigger">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <circle cx="12" cy="8" r="1" fill="currentColor"/>
+                        <path d="M12 12v5"/>
+                    </svg>
+                </span>
+            </h2>
+            <p class="section-subtitle">Principios fundamentales para construir sistemas modernos y resilientes</p>
+            
+            <!-- Graph Popup -->
+            <div class="graph-popup" id="graphPopup">
+                <div class="graph-popup-content">
+                    <h3 class="graph-popup-title">Interconexión de Principios Reactivos</h3>
+                    <p class="graph-popup-subtitle">Explora cómo los principios se relacionan entre sí</p>
+                    <div class="graph-container" id="graphContainer">
+                        <svg id="graphSvg" width="100%" height="400" viewBox="0 0 600 400">
+                            <!-- Connections -->
+                            <g class="connections" id="connections">
+                                <!-- Se generarán dinámicamente -->
+                            </g>
+                            <!-- Nodes -->
+                            <g class="nodes" id="nodes">
+                                <!-- Se generarán dinámicamente -->
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="graph-info" id="graphInfo">
+                        <p>Haz clic en un nodo para ver su descripción</p>
+                    </div>
+                </div>
+            </div>
             <div class="principles-grid">
-                <div class="principle-card" data-principle="responsive">
+                <div class="principle-card">
                     <div class="principle-icon">📱</div>
                     <h3>Responsivo</h3>
                     <p>Los sistemas responden de manera oportuna. La capacidad de respuesta es la piedra angular de la usabilidad y la utilidad.</p>
-                    <div class="principle-popup">
-                        <h4>Responsive - Capacidad de Respuesta</h4>
-                        <ul>
-                            <li><strong>Tiempo de respuesta consistente:</strong> El sistema responde en un tiempo predecible</li>
-                            <li><strong>Detecta problemas rápidamente:</strong> Identificación temprana de fallos</li>
-                            <li><strong>Maneja errores efectivamente:</strong> Recuperación sin impacto en el usuario</li>
-                            <li><strong>User Experience:</strong> Proporciona feedback confiable al usuario final</li>
-                        </ul>
-                        <div class="popup-arrow"></div>
-                    </div>
+                    <ul class="principle-features">
+                        <li>Tiempo de respuesta consistente</li>
+                        <li>Detecta problemas rápidamente</li>
+                        <li>Maneja errores efectivamente</li>
+                    </ul>
                 </div>
-                <div class="principle-card" data-principle="resilient">
+                <div class="principle-card">
                     <div class="principle-icon">🛡️</div>
                     <h3>Resiliente</h3>
                     <p>El sistema permanece responsivo ante fallos. La resiliencia se logra mediante replicación, contención, aislamiento y delegación.</p>
-                    <div class="principle-popup">
-                        <h4>Resilient - Resiliencia ante Fallos</h4>
-                        <ul>
-                            <li><strong>Replicación:</strong> Múltiples instancias para alta disponibilidad</li>
-                            <li><strong>Aislamiento:</strong> Los fallos están contenidos y no se propagan</li>
-                            <li><strong>Delegación:</strong> Recuperación gestionada por componentes externos</li>
-                            <li><strong>Supervisión:</strong> Componentes monitoreados y recuperados automáticamente</li>
-                        </ul>
-                        <div class="popup-arrow"></div>
-                    </div>
+                    <ul class="principle-features">
+                        <li>Replicación de componentes</li>
+                        <li>Aislamiento de fallos</li>
+                        <li>Supervisión automática</li>
+                    </ul>
                 </div>
-                <div class="principle-card" data-principle="elastic">
+                <div class="principle-card">
                     <div class="principle-icon">📈</div>
                     <h3>Elástico</h3>
                     <p>El sistema permanece responsivo bajo cargas de trabajo variables. Los sistemas reactivos pueden adaptarse a cambios en la demanda.</p>
-                    <div class="principle-popup">
-                        <h4>Elastic - Elasticidad y Escalabilidad</h4>
-                        <ul>
-                            <li><strong>Escalado dinámico:</strong> Ajusta recursos según la demanda</li>
-                            <li><strong>Sin cuellos de botella:</strong> Arquitectura sin puntos centrales de contención</li>
-                            <li><strong>Sharding:</strong> Distribución de carga entre múltiples nodos</li>
-                            <li><strong>Cost-effective:</strong> Paga solo por los recursos que necesitas</li>
-                        </ul>
-                        <div class="popup-arrow"></div>
-                    </div>
+                    <ul class="principle-features">
+                        <li>Escalado dinámico</li>
+                        <li>Sin cuellos de botella</li>
+                        <li>Distribución de carga</li>
+                    </ul>
                 </div>
-                <div class="principle-card" data-principle="message-driven">
+                <div class="principle-card">
                     <div class="principle-icon">💬</div>
                     <h3>Orientado a Mensajes</h3>
                     <p>Los sistemas reactivos se basan en el paso asíncrono de mensajes para establecer límites entre componentes.</p>
-                    <div class="principle-popup">
-                        <h4>Message-Driven - Comunicación Asíncrona</h4>
-                        <ul>
-                            <li><strong>Asincronía:</strong> No bloquea mientras espera respuestas</li>
-                            <li><strong>Loose coupling:</strong> Componentes independientes y desacoplados</li>
-                            <li><strong>Location transparency:</strong> La ubicación física no importa</li>
-                            <li><strong>Backpressure:</strong> Control de flujo para prevenir sobrecarga</li>
-                        </ul>
-                        <div class="popup-arrow"></div>
-                    </div>
+                    <ul class="principle-features">
+                        <li>Comunicación asíncrona</li>
+                        <li>Componentes desacoplados</li>
+                        <li>Control de flujo (backpressure)</li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -104,21 +117,65 @@
     <section class="benefits">
         <div class="container">
             <h2 class="section-title">¿Por qué Reactive?</h2>
+            <p class="section-subtitle">Ventajas de adoptar una arquitectura reactiva</p>
             <div class="benefits-content">
                 <div class="benefit-item">
                     <div class="benefit-number">01</div>
-                    <h3>Mejor Experiencia de Usuario</h3>
-                    <p>Respuestas rápidas y consistentes mejoran la satisfacción del usuario.</p>
+                    <div>
+                        <h3>Mejor Experiencia de Usuario</h3>
+                        <p>Respuestas rápidas y consistentes mejoran la satisfacción del usuario.</p>
+                    </div>
                 </div>
                 <div class="benefit-item">
                     <div class="benefit-number">02</div>
-                    <h3>Escalabilidad Mejorada</h3>
-                    <p>Los sistemas reactivos escalan horizontal y verticalmente según demanda.</p>
+                    <div>
+                        <h3>Escalabilidad Mejorada</h3>
+                        <p>Los sistemas reactivos escalan horizontal y verticalmente según demanda.</p>
+                    </div>
                 </div>
                 <div class="benefit-item">
                     <div class="benefit-number">03</div>
-                    <h3>Mayor Confiabilidad</h3>
-                    <p>La resiliencia incorporada garantiza disponibilidad continua del servicio.</p>
+                    <div>
+                        <h3>Mayor Confiabilidad</h3>
+                        <p>La resiliencia incorporada garantiza disponibilidad continua del servicio.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Publications Section -->
+    <section class="publications">
+        <div class="container">
+            <h2 class="section-title">Publicaciones Destacadas</h2>
+            <p class="section-subtitle">Explora artículos sobre programación reactiva y sistemas distribuidos</p>
+            <div class="publications-grid">
+                <div class="publication-card">
+                    <div class="publication-header">
+                        <span class="publication-category">Akka</span>
+                        <span class="publication-date">2026</span>
+                    </div>
+                    <h3 class="publication-title">Introducción a Akka Actors</h3>
+                    <p class="publication-excerpt">Descubre cómo el modelo de actores proporciona una abstracción poderosa para construir sistemas concurrentes y distribuidos.</p>
+                    <a href="@routes.HomeController.publicaciones()" class="publication-link">Leer más →</a>
+                </div>
+                <div class="publication-card">
+                    <div class="publication-header">
+                        <span class="publication-category">Streams</span>
+                        <span class="publication-date">2026</span>
+                    </div>
+                    <h3 class="publication-title">Akka Streams y Procesamiento Reactivo</h3>
+                    <p class="publication-excerpt">Aprende a procesar flujos de datos con backpressure y control de flujo automático usando Akka Streams.</p>
+                    <a href="@routes.HomeController.publicaciones()" class="publication-link">Leer más →</a>
+                </div>
+                <div class="publication-card">
+                    <div class="publication-header">
+                        <span class="publication-category">Play Framework</span>
+                        <span class="publication-date">2026</span>
+                    </div>
+                    <h3 class="publication-title">Programación Asíncrona en Play</h3>
+                    <p class="publication-excerpt">Domina Futures, Promises y técnicas asíncronas para construir aplicaciones web de alto rendimiento.</p>
+                    <a href="@routes.HomeController.publicaciones()" class="publication-link">Leer más →</a>
                 </div>
             </div>
         </div>
