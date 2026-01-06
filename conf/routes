@@ -19,5 +19,36 @@ POST    /contact                    controllers.HomeController.submitContact()
 GET     /api/contacts               controllers.HomeController.listContacts(page: Int ?= 0)
 GET     /api/contacts/stats         controllers.HomeController.contactStats()
 
+# Authentication Routes (Users & Admins)
+GET     /login                      controllers.AuthController.loginPage()
+POST    /login                      controllers.AuthController.login()
+GET     /register                   controllers.AuthController.registerPage()
+POST    /register                   controllers.AuthController.register()
+GET     /logout                     controllers.AuthController.logout()
+
+# User Dashboard Routes
+GET     /dashboard                  controllers.AuthController.userDashboard()
+GET     /profile                    controllers.AuthController.userProfile()
+
+# Admin Panel Routes (Legacy - mantener por compatibilidad)
+GET     /admin/login                controllers.AdminController.loginPage()
+POST    /admin/login                controllers.AdminController.login()
+GET     /admin/logout               controllers.AdminController.logout()
+GET     /admin                      controllers.AdminController.dashboard(page: Int ?= 0, search: Option[String] ?= None)
+GET     /admin/dashboard            controllers.AdminController.dashboard(page: Int ?= 0, search: Option[String] ?= None)
+GET     /admin/statistics           controllers.AdminController.statisticsPage()
+GET     /admin/stats                controllers.AdminController.stats()
+GET     /admin/stats/advanced       controllers.AdminController.advancedStats()
+
+# Admin CRUD Operations
+GET     /admin/contacts/new         controllers.AdminController.createContactPage()
+POST    /admin/contacts/new         controllers.AdminController.createContact()
+GET     /admin/contacts/:id         controllers.AdminController.viewContact(id: Long)
+GET     /admin/contacts/:id/edit    controllers.AdminController.editContactPage(id: Long)
+POST    /admin/contacts/:id/edit    controllers.AdminController.updateContact(id: Long)
+POST    /admin/contacts/:id/delete  controllers.AdminController.deleteContact(id: Long)
+POST    /admin/contacts/:id/status/:status  controllers.AdminController.updateStatus(id: Long, status: String)
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+
