@@ -1,0 +1,158 @@
+// ============================================
+// Components - Forms
+// ============================================
+
+.contact-form {
+  background: var(--bg-white);
+  padding: $spacing-2xl;
+  border-radius: $border-radius-lg;
+  border: 2px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    border-color: var(--primary-light);
+    box-shadow: 0 8px 30px rgba(99, 102, 241, 0.15);
+  }
+}
+
+.form-group {
+  margin-bottom: $spacing-lg;
+
+  label {
+    display: block;
+    margin-bottom: $spacing-sm;
+    font-weight: $font-weight-semibold;
+    color: var(--text-dark);
+    font-size: $font-size-sm;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="url"],
+  textarea,
+  select {
+    width: 100%;
+    padding: $spacing-md;
+    border: 2px solid var(--border-color);
+    border-radius: $border-radius-md;
+    font-size: $font-size-base;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--bg-white);
+    color: var(--text-dark);
+    font-family: inherit;
+
+    &:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    &::placeholder {
+      color: var(--text-light);
+    }
+  }
+
+  textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+
+  select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right $spacing-sm center;
+    padding-right: $spacing-xl;
+  }
+
+  // Estados
+  .form-input-error,
+  input.error,
+  textarea.error,
+  select.error {
+    border-color: var(--error-color) !important;
+    background: rgba(239, 68, 68, 0.05);
+  }
+
+  input.success,
+  textarea.success,
+  select.success {
+    border-color: var(--success-color);
+    background: rgba(16, 185, 129, 0.05);
+  }
+
+  .form-error {
+    color: var(--error-color);
+    font-size: $font-size-xs;
+    margin-top: $spacing-xs;
+    display: block;
+    font-weight: $font-weight-medium;
+  }
+
+  .help-text {
+    color: var(--text-light);
+    font-size: $font-size-xs;
+    margin-top: $spacing-xs;
+  }
+}
+
+// Info Cards
+.info-card {
+  padding: $spacing-xl;
+  background: var(--bg-white);
+  border-radius: $border-radius-lg;
+  border: 2px solid var(--border-color);
+  border-left: 4px solid var(--primary-color);
+  transition: all $transition-base $easing-default;
+
+  &:hover {
+    border-left-width: 6px;
+    box-shadow: var(--shadow-md);
+  }
+
+  .info-icon {
+    font-size: $font-size-4xl;
+    margin-bottom: $spacing-md;
+    display: block;
+  }
+
+  h4 {
+    font-size: $font-size-lg;
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+    font-weight: $font-weight-bold;
+  }
+
+  p {
+    color: var(--text-light);
+    line-height: $line-height-normal;
+    font-size: $font-size-sm;
+  }
+}
+
+// Checkbox y Radio
+.form-check {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-sm;
+
+  input[type="checkbox"],
+  input[type="radio"] {
+    width: auto;
+    cursor: pointer;
+  }
+
+  label {
+    margin-bottom: 0;
+    cursor: pointer;
+  }
+}
