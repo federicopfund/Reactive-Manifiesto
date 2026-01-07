@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ============================================
     // Mobile Menu Toggle
     // ============================================
+    const MOBILE_BREAKPOINT = 768; // Match SCSS $breakpoint-md
     const hamburger = document.getElementById('hamburger');
     const navbarMenu = document.getElementById('navbarMenu');
     const mobileOverlay = document.getElementById('mobileOverlay');
@@ -65,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(() => {
             // Close mobile menu if window is resized to desktop
-            if (window.innerWidth > 768 && navbarMenu.classList.contains('active')) {
+            if (window.innerWidth > MOBILE_BREAKPOINT && navbarMenu.classList.contains('active')) {
                 closeMobileMenu();
             }
         }, 250);

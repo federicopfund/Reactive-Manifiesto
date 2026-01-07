@@ -88,6 +88,9 @@
 }
 
 // Hamburger Menu Button
+$hamburger-line-spacing: 8px;
+$hamburger-line-offset: 20px;
+
 .hamburger {
   display: none;
   flex-direction: column;
@@ -127,16 +130,16 @@
   &.active {
     .hamburger-line {
       &:nth-child(1) {
-        transform: translateY(8px) rotate(45deg);
+        transform: translateY($hamburger-line-spacing) rotate(45deg);
       }
 
       &:nth-child(2) {
         opacity: 0;
-        transform: translateX(-20px);
+        transform: translateX(-$hamburger-line-offset);
       }
 
       &:nth-child(3) {
-        transform: translateY(-8px) rotate(-45deg);
+        transform: translateY(-$hamburger-line-spacing) rotate(-45deg);
       }
     }
   }
@@ -194,6 +197,13 @@
     }
   }
 
+  // Login button special styling
+  &-login {
+    background: rgba(255, 255, 255, 0.1);
+    padding: $spacing-sm $spacing-md;
+    border-radius: 6px;
+  }
+
   @media (max-width: $breakpoint-md) {
     width: 100%;
     padding: $spacing-md $spacing-lg;
@@ -229,6 +239,18 @@
 
     &:active {
       transform: scale(0.98) translateX(8px);
+    }
+
+    // Login button mobile styling
+    &-login {
+      margin-top: $spacing-lg;
+      justify-content: center;
+      font-size: $font-size-base;
+      border-radius: 8px;
+
+      &::before {
+        display: none;
+      }
     }
   }
 }
@@ -435,26 +457,12 @@
   .navbar-menu {
     gap: $spacing-md;
     
-    .nav-link:not([style*="background"]) {
+    .nav-link:not(.nav-link-login) {
       border-bottom: 1px solid var(--border-color);
       margin-bottom: $spacing-xs;
       
       &:last-of-type {
         border-bottom: none;
-      }
-    }
-    
-    // Login button special styling in mobile
-    .nav-link[style*="background"] {
-      margin-top: $spacing-lg;
-      padding: $spacing-md $spacing-lg;
-      text-align: center;
-      justify-content: center;
-      font-size: $font-size-base;
-      border-radius: 8px;
-      
-      &::before {
-        display: none;
       }
     }
   }
