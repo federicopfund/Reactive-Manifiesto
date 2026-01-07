@@ -1,10 +1,11 @@
 # Multi-stage build for Reactive Manifesto
-FROM eclipse-temurin:17-jdk as builder
+FROM eclipse-temurin:17-jdk AS builder
 
 # Install sbt
 RUN apt-get update && \
-    apt-get install -y curl && \
-    curl -L -o /tmp/sbt.tgz https://github.com/sbt/sbt/releases/download/v1.9.9/sbt-1.9.9.tgz && \
+    apt-get install -y curl ca-certificates && \
+    update-ca-certificates && \
+    curl -fsSL -o /tmp/sbt.tgz https://github.com/sbt/sbt/releases/download/v1.9.9/sbt-1.9.9.tgz && \
     tar -xzf /tmp/sbt.tgz -C /usr/local && \
     ln -s /usr/local/sbt/bin/sbt /usr/bin/sbt && \
     rm /tmp/sbt.tgz
@@ -34,7 +35,6 @@ EXPOSE 9000
 
 # Set production environment variables
 ENV PLAY_ENV=prod
-ENV APPLICATION_SECRET=${APPLICATION_SECRET:-changeme}
 
 # Run the application
-CMD ["./bin/web"]
+CMD ["./bin/web", "-Dplay.http.secret.key=${APPLICATION_SECRET:-changeme}"]
