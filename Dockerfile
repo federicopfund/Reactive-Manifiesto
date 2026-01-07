@@ -8,10 +8,14 @@ WORKDIR /app
 COPY project/build.properties project/
 COPY project/plugins.sbt project/
 
-# Download sbt dependencies
-RUN apt-get update && apt-get install -y curl && \
-    curl -L https://github.com/sbt/sbt/releases/download/v1.9.7/sbt-1.9.7.tgz | tar xz -C /usr/local && \
-    ln -s /usr/local/sbt/bin/sbt /usr/bin/sbt
+# Install sbt from Debian packages
+RUN apt-get update && \
+    apt-get install -y apt-transport-https curl gnupg && \
+    echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | tee /etc/apt/sources.list.d/sbt.list && \
+    echo "deb https://repo.scala-sbt.org/scalasbt/debian /" | tee /etc/apt/sources.list.d/sbt_old.list && \
+    curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | apt-key add && \
+    apt-get update && \
+    apt-get install -y sbt
 
 # Copy build definition
 COPY build.sbt .
@@ -33,7 +37,6 @@ WORKDIR /app
 COPY --from=builder /app/target/universal/stage /app
 
 # Set environment variables for production
-ENV PLAY_HTTP_SECRET_KEY="changeme-please-use-env-var"
 ENV APPLICATION_MODE="prod"
 
 # Set conservative JVM options for limited memory (Render free plan)
@@ -44,4 +47,5 @@ EXPOSE 9000
 
 # Run the application in production mode
 # The PORT environment variable will be used by Play Framework
-CMD ["sh", "-c", "/app/bin/web -Dhttp.port=${PORT:-9000} -Dplay.http.secret.key=${APPLICATION_SECRET:-changeme}"]
+# APPLICATION_SECRET must be provided via environment variable
+CMD ["sh", "-c", "/app/bin/web -Dhttp.port=${PORT:-9000} -Dplay.http.secret.key=${APPLICATION_SECRET}"]
