@@ -1,6 +1,6 @@
 # Multi-stage Dockerfile for Play Framework application
 # Stage 1: Builder - Build the application using sbt
-FROM eclipse-temurin:17-jdk as builder
+FROM eclipse-temurin:17-jdk AS builder
 
 WORKDIR /app
 
