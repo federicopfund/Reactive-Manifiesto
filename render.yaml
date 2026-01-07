@@ -24,7 +24,7 @@ services:
     healthCheckPath: /
 
   # PostgreSQL Database
-  - type: pds
+  - type: postgres
     name: reactive-manifesto-db
     plan: free
     databaseName: reactive_manifesto
