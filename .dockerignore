@@ -1,0 +1,47 @@
+# Git
+.git
+.gitignore
+
+# IDE
+.idea
+.vscode
+*.iml
+*.ipr
+*.iws
+.bsp
+
+# Build outputs
+target/
+dist/
+logs/
+tmp/
+.cache
+.history
+
+# SBT specific
+project/target/
+project/project/
+
+# Application specific
+server.log
+*.log
+
+# Documentation
+*.md
+!README.md
+
+# Test
+test-results/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node modules (if any)
+node_modules/
+npm-debug.log
+
+# Temporary files
+*~
+*.swp
+*.swo

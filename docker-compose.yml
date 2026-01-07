@@ -1,0 +1,62 @@
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: reactive-manifesto-db
+    environment:
+      POSTGRES_DB: reactive_manifesto
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  # Play Framework Application
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: reactive-manifesto-app
+    ports:
+      - "9000:9000"
+    environment:
+      HTTP_PORT: 9000
+      APPLICATION_SECRET: "change_this_secret_in_production"
+      JAVA_OPTS: "-Xmx512m -Xms256m"
+      # PostgreSQL configuration
+      DB_PROFILE: "slick.jdbc.PostgresProfile$$"
+      DB_DRIVER: "org.postgresql.Driver"
+      DB_URL: "jdbc:postgresql://db:5432/reactive_manifesto"
+      DB_USER: "postgres"
+      DB_PASSWORD: "postgres"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+    command: >
+      sh -c "bin/web 
+      -Dhttp.port=$${HTTP_PORT} 
+      -Dplay.http.secret.key=$${APPLICATION_SECRET}
+      -Dslick.dbs.default.profile=$${DB_PROFILE}
+      -Dslick.dbs.default.db.driver=$${DB_DRIVER}
+      -Dslick.dbs.default.db.url=$${DB_URL}
+      -Dslick.dbs.default.db.user=$${DB_USER}
+      -Dslick.dbs.default.db.password=$${DB_PASSWORD}
+      $${JAVA_OPTS}"
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge
