@@ -1,76 +1,76 @@
 // Dark Mode Theme Toggle
 document.addEventListener('DOMContentLoaded', function() {
     // ============================================
-    // Dynamic Navbar Clock
+    // Mobile Menu Toggle
     // ============================================
-    const clockHours = document.getElementById('clockHours');
-    const clockMinutes = document.getElementById('clockMinutes');
-    const clockSeconds = document.getElementById('clockSeconds');
-    const clockDate = document.getElementById('clockDate');
+    const MOBILE_BREAKPOINT = 768; // Match SCSS $breakpoint-md
+    const hamburger = document.getElementById('hamburger');
+    const navbarMenu = document.getElementById('navbarMenu');
+    const mobileOverlay = document.getElementById('mobileOverlay');
+    const navLinks = document.querySelectorAll('.navbar-menu .nav-link');
 
-    // Función para formatear números con dos dígitos
-    function padZero(num) {
-        return num.toString().padStart(2, '0');
-    }
-
-    // Función para obtener el nombre del mes en español
-    function getMonthName(month) {
-        const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-                       'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-        return months[month];
-    }
-
-    // Función para obtener el nombre del día en español
-    function getDayName(day) {
-        const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-        return days[day];
-    }
-
-    // Función para actualizar el reloj
-    function updateClock() {
-        const now = new Date();
+    function toggleMobileMenu() {
+        const isActive = hamburger.classList.contains('active');
         
-        const hours = now.getHours();
-        const minutes = now.getMinutes();
-        const seconds = now.getSeconds();
+        hamburger.classList.toggle('active');
+        navbarMenu.classList.toggle('active');
+        mobileOverlay.classList.toggle('active');
         
-        const day = now.getDate();
-        const month = now.getMonth();
-        const year = now.getFullYear();
-        const dayName = getDayName(now.getDay());
-        const monthName = getMonthName(month);
-
-        // Actualizar hora con animación
-        if (clockHours && clockHours.textContent !== padZero(hours)) {
-            clockHours.classList.add('updating');
-            setTimeout(() => clockHours.classList.remove('updating'), 600);
-            clockHours.textContent = padZero(hours);
-        }
+        // Update ARIA attribute
+        hamburger.setAttribute('aria-expanded', !isActive);
         
-        if (clockMinutes && clockMinutes.textContent !== padZero(minutes)) {
-            clockMinutes.classList.add('updating');
-            setTimeout(() => clockMinutes.classList.remove('updating'), 600);
-            clockMinutes.textContent = padZero(minutes);
-        }
-        
-        if (clockSeconds) {
-            clockSeconds.classList.add('updating');
-            setTimeout(() => clockSeconds.classList.remove('updating'), 600);
-            clockSeconds.textContent = padZero(seconds);
-        }
-
-        // Actualizar fecha
-        if (clockDate) {
-            clockDate.textContent = `${dayName}, ${day} ${monthName} ${year}`;
+        // Prevent body scroll when menu is open
+        if (!isActive) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
         }
     }
 
-    // Inicializar reloj inmediatamente
-    if (clockHours && clockMinutes && clockSeconds) {
-        updateClock();
-        // Actualizar cada segundo
-        setInterval(updateClock, 1000);
+    function closeMobileMenu() {
+        hamburger.classList.remove('active');
+        navbarMenu.classList.remove('active');
+        mobileOverlay.classList.remove('active');
+        hamburger.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
     }
+
+    // Toggle menu on hamburger click
+    if (hamburger) {
+        hamburger.addEventListener('click', toggleMobileMenu);
+    }
+
+    // Close menu on overlay click
+    if (mobileOverlay) {
+        mobileOverlay.addEventListener('click', closeMobileMenu);
+    }
+
+    // Close menu when clicking nav links
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            // Small delay to allow navigation to start
+            setTimeout(closeMobileMenu, 150);
+        });
+    });
+
+    // Close menu on escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && navbarMenu.classList.contains('active')) {
+            closeMobileMenu();
+        }
+    });
+
+    // Handle window resize
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            // Close mobile menu if window is resized to desktop
+            if (window.innerWidth > MOBILE_BREAKPOINT && navbarMenu.classList.contains('active')) {
+                closeMobileMenu();
+            }
+        }, 250);
+    });
 
     // ============================================
     // Interactive Graph Popup
