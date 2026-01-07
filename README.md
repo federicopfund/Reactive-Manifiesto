@@ -39,7 +39,7 @@ Esta aplicación web presenta los cuatro pilares fundamentales del Manifiesto Re
 - **Lenguaje**: Scala 2.13.12
 - **Sistema Reactivo**: Akka Typed 2.8.5
 - **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
-- **Build Tool**: SBT 1.9.7
+- **Build Tool**: SBT 1.9.9
 
 ## 📋 Requisitos Previos
 

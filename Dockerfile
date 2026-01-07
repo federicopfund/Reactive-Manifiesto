@@ -30,11 +30,26 @@ WORKDIR /app
 # Copy the built application from builder stage
 COPY --from=builder /app/target/universal/stage /app
 
+# Create entrypoint script to handle environment variables properly
+RUN echo '#!/bin/bash\n\
+set -e\n\
+\n\
+# Check if APPLICATION_SECRET is set, otherwise fail\n\
+if [ -z "$APPLICATION_SECRET" ]; then\n\
+  echo "ERROR: APPLICATION_SECRET environment variable must be set"\n\
+  echo "Generate one with: openssl rand -base64 32"\n\
+  exit 1\n\
+fi\n\
+\n\
+# Start the application with the secret\n\
+exec ./bin/web -Dplay.http.secret.key="$APPLICATION_SECRET"\n\
+' > /app/entrypoint.sh && chmod +x /app/entrypoint.sh
+
 # Expose the default Play Framework port
 EXPOSE 9000
 
 # Set production environment variables
 ENV PLAY_ENV=prod
 
-# Run the application
-CMD ["./bin/web", "-Dplay.http.secret.key=${APPLICATION_SECRET:-changeme}"]
+# Use entrypoint script
+ENTRYPOINT ["/app/entrypoint.sh"]

@@ -4,7 +4,9 @@ services:
     ports:
       - "9000:9000"
     environment:
-      - APPLICATION_SECRET=${APPLICATION_SECRET:-changeme-this-is-insecure}
+      # SECURITY WARNING: Change APPLICATION_SECRET in production!
+      # Generate with: openssl rand -base64 32
+      - APPLICATION_SECRET=${APPLICATION_SECRET:?APPLICATION_SECRET must be set}
       - PLAY_ENV=prod
       - DB_URL=${DB_URL:-jdbc:h2:mem:play;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=FALSE}
       - DB_USER=${DB_USER:-sa}

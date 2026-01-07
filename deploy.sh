@@ -19,7 +19,7 @@ echo ""
 
 # Function to display menu
 show_menu() {
-    echo -e "${GREEN}Selecciona una opción de deployment:${NC}"
+    echo -e "${GREEN}Select a deployment option:${NC}"
     echo ""
     echo "  1) 🐳 Build Docker Image"
     echo "  2) 🚀 Run with Docker"

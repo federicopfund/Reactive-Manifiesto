@@ -34,7 +34,7 @@ Este documento resume todos los archivos de configuración creados para el deplo
 
 #### `system.properties`
 - Especifica Java 17
-- Define versión de SBT 1.9.7
+- Define versión de SBT 1.9.9
 - Heroku usa esto para configurar el buildpack correcto
 
 ### 🤖 GitHub Actions Workflows
