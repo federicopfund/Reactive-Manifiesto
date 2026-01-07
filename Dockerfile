@@ -8,14 +8,14 @@ WORKDIR /app
 COPY project/build.properties project/
 COPY project/plugins.sbt project/
 
-# Install sbt from Debian packages
+# Install sbt
+# Note: In some build environments with SSL inspection, you may need to use wget or curl with --insecure
 RUN apt-get update && \
-    apt-get install -y apt-transport-https curl gnupg && \
-    echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | tee /etc/apt/sources.list.d/sbt.list && \
-    echo "deb https://repo.scala-sbt.org/scalasbt/debian /" | tee /etc/apt/sources.list.d/sbt_old.list && \
-    curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | apt-key add && \
-    apt-get update && \
-    apt-get install -y sbt && \
+    apt-get install -y wget && \
+    wget --no-check-certificate https://github.com/sbt/sbt/releases/download/v1.9.7/sbt-1.9.7.tgz -O /tmp/sbt.tgz && \
+    tar -xzf /tmp/sbt.tgz -C /usr/local && \
+    ln -s /usr/local/sbt/bin/sbt /usr/bin/sbt && \
+    rm /tmp/sbt.tgz && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
