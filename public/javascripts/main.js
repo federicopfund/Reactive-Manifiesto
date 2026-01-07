@@ -1,6 +1,77 @@
 // Dark Mode Theme Toggle
 document.addEventListener('DOMContentLoaded', function() {
     // ============================================
+    // Mobile Menu Toggle
+    // ============================================
+    const hamburger = document.getElementById('hamburger');
+    const navbarMenu = document.getElementById('navbarMenu');
+    const mobileOverlay = document.getElementById('mobileOverlay');
+    const navLinks = document.querySelectorAll('.navbar-menu .nav-link');
+
+    function toggleMobileMenu() {
+        const isActive = hamburger.classList.contains('active');
+        
+        hamburger.classList.toggle('active');
+        navbarMenu.classList.toggle('active');
+        mobileOverlay.classList.toggle('active');
+        
+        // Update ARIA attribute
+        hamburger.setAttribute('aria-expanded', !isActive);
+        
+        // Prevent body scroll when menu is open
+        if (!isActive) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+    }
+
+    function closeMobileMenu() {
+        hamburger.classList.remove('active');
+        navbarMenu.classList.remove('active');
+        mobileOverlay.classList.remove('active');
+        hamburger.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+    }
+
+    // Toggle menu on hamburger click
+    if (hamburger) {
+        hamburger.addEventListener('click', toggleMobileMenu);
+    }
+
+    // Close menu on overlay click
+    if (mobileOverlay) {
+        mobileOverlay.addEventListener('click', closeMobileMenu);
+    }
+
+    // Close menu when clicking nav links
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            // Small delay to allow navigation to start
+            setTimeout(closeMobileMenu, 150);
+        });
+    });
+
+    // Close menu on escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && navbarMenu.classList.contains('active')) {
+            closeMobileMenu();
+        }
+    });
+
+    // Handle window resize
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            // Close mobile menu if window is resized to desktop
+            if (window.innerWidth > 768 && navbarMenu.classList.contains('active')) {
+                closeMobileMenu();
+            }
+        }, 250);
+    });
+
+    // ============================================
     // Dynamic Navbar Clock
     // ============================================
     const clockHours = document.getElementById('clockHours');

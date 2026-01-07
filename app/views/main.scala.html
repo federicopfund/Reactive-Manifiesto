@@ -26,12 +26,9 @@
             <div class="navbar-brand">
                 <h1>⚡ Reactive Manifesto</h1>
             </div>
-            <div class="navbar-menu">
-                <a href="@routes.HomeController.index()" class="nav-link">Inicio</a>
-                <a href="@routes.HomeController.publicaciones()" class="nav-link">Publicaciones</a>
-                <a href="@routes.HomeController.portafolio()" class="nav-link">Portafolio</a>
-                <a href="@routes.HomeController.index()#contact" class="nav-link">Contacto</a>
-                <a href="@routes.AuthController.loginPage()" class="nav-link" style="background: rgba(255,255,255,0.1); padding: 0.5rem 1rem; border-radius: 6px;">🔐 Login</a>
+            
+            <!-- Mobile Controls (Clock + Theme + Hamburger) -->
+            <div class="navbar-mobile-controls">
                 <div class="navbar-clock" id="navbarClock">
                     <div class="clock-display">
                         <div class="clock-time">
@@ -47,8 +44,24 @@
                 <button class="theme-toggle" id="theme-toggle" aria-label="Cambiar tema">
                     <span class="theme-icon" id="theme-icon">🌙</span>
                 </button>
+                <button class="hamburger" id="hamburger" aria-label="Menú" aria-expanded="false">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+            </div>
+            
+            <div class="navbar-menu" id="navbarMenu">
+                <a href="@routes.HomeController.index()" class="nav-link">Inicio</a>
+                <a href="@routes.HomeController.publicaciones()" class="nav-link">Publicaciones</a>
+                <a href="@routes.HomeController.portafolio()" class="nav-link">Portafolio</a>
+                <a href="@routes.HomeController.index()#contact" class="nav-link">Contacto</a>
+                <a href="@routes.AuthController.loginPage()" class="nav-link" style="background: rgba(255,255,255,0.1); padding: 0.5rem 1rem; border-radius: 6px;">🔐 Login</a>
             </div>
         </div>
+        
+        <!-- Mobile Overlay -->
+        <div class="mobile-overlay" id="mobileOverlay"></div>
     </nav>
 
     <main>
