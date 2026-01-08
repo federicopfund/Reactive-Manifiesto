@@ -43,8 +43,24 @@ Esta aplicación web presenta los cuatro pilares fundamentales del Manifiesto Re
 
 ## 📋 Requisitos Previos
 
-- Java 17 o superior
-- SBT 1.9.x
+- Java 17 o superior (versiones LTS: 11, 17, 21)
+- SBT 1.9.7+
+
+### 📦 Instalación Automática de Dependencias
+
+Para instalar Java y SBT automáticamente, usa uno de los siguientes scripts:
+
+**Instalación Interactiva (Recomendado):**
+```bash
+./install-dependencies.sh
+```
+
+**Instalación Rápida (Sin confirmaciones):**
+```bash
+./quick-install.sh
+```
+
+📖 Ver [INSTALLATION.md](INSTALLATION.md) para más detalles sobre la instalación.
 
 ## 🚀 Instalación y Ejecución
 
