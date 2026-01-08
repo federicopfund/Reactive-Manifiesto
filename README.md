@@ -2,7 +2,7 @@
 
 Una aplicación web moderna que demuestra los principios del [Manifiesto Reactivo](https://www.reactivemanifesto.org/) utilizando Play Framework y Akka Typed.
 
-![Desktop View](https://github.com/user-attachments/assets/a42bfee1-78f3-4c63-88a3-1ddee5982b33)
+![Desktop View](./public/Imagen/image.png)
 
 ## 🎯 Descripción
 
