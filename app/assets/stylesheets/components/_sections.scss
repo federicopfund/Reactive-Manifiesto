@@ -8,6 +8,11 @@
   position: relative;
   transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   
+  .section-title,
+  .section-subtitle {
+    text-align: center;
+  }
+  
   &::after {
     content: '';
     position: absolute;
@@ -24,6 +29,11 @@
   background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-white) 100%);
   position: relative;
   transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  .section-title,
+  .section-subtitle {
+    text-align: center;
+  }
   
   &::before {
     content: '';
@@ -47,6 +57,11 @@
   background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-white) 100%);
   position: relative;
   transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  .section-title,
+  .section-subtitle {
+    text-align: center;
+  }
   
   &::before {
     content: '';
@@ -125,17 +140,6 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: $spacing-md;
-  }
-
-  .publication-category {
-    background: var(--primary-color);
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: $font-size-xs;
-    font-weight: $font-weight-semibold;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
   }
 
   .publication-date {

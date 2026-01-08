@@ -160,40 +160,53 @@
   }
 }
 
-// Category Badge - Floating Pill
+// Category Badge - Diseño Formal y Elegante
 .publication-category {
   display: inline-flex;
   align-items: center;
   padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, 
-    var(--primary-color) 0%,
-    var(--primary-dark) 100%);
-  color: white;
-  border-radius: 25px;
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb; // Azul sólido para modo claro
+  border-radius: 6px;
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   box-shadow: 
-    0 4px 12px rgba(99, 102, 241, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    0 2px 4px rgba(59, 130, 246, 0.12),
+    inset 0 0 0 1.5px rgba(59, 130, 246, 0.35);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(45deg,
-      transparent 30%,
-      rgba(255, 255, 255, 0.1) 50%,
-      transparent 70%);
-    transform: rotate(45deg);
-    animation: shimmer 3s infinite;
+  border: 1.5px solid rgba(59, 130, 246, 0.3);
+  
+  // Hover effect sutil
+  .publication-card:hover & {
+    transform: translateY(-2px);
+    background: rgba(59, 130, 246, 0.15);
+    box-shadow: 
+      0 4px 12px rgba(59, 130, 246, 0.3),
+      inset 0 0 0 1.5px rgba(59, 130, 246, 0.5);
+    border-color: rgba(59, 130, 246, 0.5);
+    color: #1d4ed8; // Azul más oscuro en hover
+  }
+  
+  // Dark mode - con texto blanco
+  [data-theme="dark"] & {
+    background: rgba(59, 130, 246, 0.2);
+    color: #ffffff; // Blanco sólido para modo oscuro
+    box-shadow: 
+      0 2px 4px rgba(0, 0, 0, 0.3),
+      inset 0 0 0 1.5px rgba(255, 255, 255, 0.15);
+    border-color: rgba(59, 130, 246, 0.4);
+    
+    .publication-card:hover & {
+      transform: translateY(-2px);
+      background: rgba(59, 130, 246, 0.35);
+      box-shadow: 
+        0 4px 12px rgba(59, 130, 246, 0.5),
+        inset 0 0 0 1.5px rgba(255, 255, 255, 0.25);
+      border-color: rgba(59, 130, 246, 0.6);
+      color: #ffffff;
+    }
   }
 }
 

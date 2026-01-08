@@ -1,21 +1,59 @@
 // ============================================
-// Variables - Colores, Espaciado, Tipografía
+// Variables - Sistema de Diseño Profesional
 // ============================================
 
-// Colores Primarios
-$primary-color: #6366f1;
-$primary-dark: #4f46e5;
-$primary-light: #818cf8;
+// ============================================
+// COLORES SEMÁNTICOS - REACTIVE MANIFESTO
+// ============================================
+
+// RESPONSIVE - Azul/Cyan (Confiabilidad, Fluidez)
+$responsive-primary: #3b82f6;
+$responsive-light: #60a5fa;
+$responsive-lighter: #93c5fd;
+$responsive-dark: #2563eb;
+$responsive-darker: #1d4ed8;
+$responsive-gradient: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+
+// RESILIENT - Verde/Emerald (Fortaleza, Estabilidad)
+$resilient-primary: #10b981;
+$resilient-light: #34d399;
+$resilient-lighter: #6ee7b7;
+$resilient-dark: #059669;
+$resilient-darker: #047857;
+$resilient-gradient: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
+
+// ELASTIC - Naranja/Amber (Energía, Adaptabilidad)
+$elastic-primary: #f59e0b;
+$elastic-light: #fbbf24;
+$elastic-lighter: #fcd34d;
+$elastic-dark: #d97706;
+$elastic-darker: #b45309;
+$elastic-gradient: linear-gradient(135deg, #f59e0b 0%, #fb923c 100%);
+
+// MESSAGE - Púrpura/Violet (Comunicación, Conexión)
+$message-primary: #8b5cf6;
+$message-light: #a78bfa;
+$message-lighter: #c4b5fd;
+$message-dark: #7c3aed;
+$message-darker: #6d28d9;
+$message-gradient: linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%);
+
+// Colores Base del Sistema
+$primary-color: $responsive-primary;
+$primary-dark: $responsive-dark;
+$primary-light: $responsive-light;
 $secondary-color: #ec4899;
-$success-color: #10b981;
+$success-color: $resilient-primary;
 $error-color: #ef4444;
-$warning-color: #f59e0b;
-$info-color: #3b82f6;
+$warning-color: $elastic-primary;
+$info-color: $responsive-primary;
 
 // Para el grafo
-$accent-color-rgb: 99, 102, 241;
+$accent-color-rgb: 59, 130, 246;
 
-// Paleta de Grises
+// ============================================
+// PALETA DE GRISES REFINADA (10 tonos)
+// ============================================
 $gray-50: #f9fafb;
 $gray-100: #f3f4f6;
 $gray-200: #e5e7eb;
@@ -26,6 +64,7 @@ $gray-600: #4b5563;
 $gray-700: #374151;
 $gray-800: #1f2937;
 $gray-900: #111827;
+$gray-950: #030712;
 
 // Colores de Texto
 $text-dark: #1f2937;
@@ -51,67 +90,139 @@ $border-radius-sm: 4px;
 $border-radius-md: 8px;
 $border-radius-lg: 12px;
 $border-radius-xl: 16px;
+$border-radius-2xl: 20px;
+$border-radius-3xl: 24px;
 $border-radius-full: 9999px;
 
-// Sombras
-$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+// Border Widths
+$border-width-thin: 1px;
+$border-width-base: 2px;
+$border-width-thick: 4px;
+
+// ============================================
+// SOMBRAS - Sistema Elevación
+// ============================================
+$shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
 $shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+$shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
 
-// Espaciado
-$spacing-xs: 0.25rem;
-$spacing-sm: 0.5rem;
-$spacing-md: 1rem;
-$spacing-lg: 1.5rem;
-$spacing-xl: 2rem;
-$spacing-2xl: 3rem;
-$spacing-3xl: 4rem;
-$spacing-4xl: 5rem;
-$spacing-5xl: 6rem;
+// Sombras con Color (Reactive Principles)
+$shadow-responsive: 0 10px 30px -5px rgba(59, 130, 246, 0.3);
+$shadow-resilient: 0 10px 30px -5px rgba(16, 185, 129, 0.3);
+$shadow-elastic: 0 10px 30px -5px rgba(245, 158, 11, 0.3);
+$shadow-message: 0 10px 30px -5px rgba(139, 92, 246, 0.3);
 
-// Tipografía - Manrope (cálida y legible)
-$font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+// ============================================
+// ESPACIADO - Sistema Base 8px
+// ============================================
+$spacing-0: 0;
+$spacing-1: 0.25rem;   // 4px
+$spacing-2: 0.5rem;    // 8px (base)
+$spacing-3: 0.75rem;   // 12px
+$spacing-4: 1rem;      // 16px
+$spacing-5: 1.25rem;   // 20px
+$spacing-6: 1.5rem;    // 24px
+$spacing-7: 1.75rem;   // 28px
+$spacing-8: 2rem;      // 32px
+$spacing-10: 2.5rem;   // 40px
+$spacing-12: 3rem;     // 48px
+$spacing-16: 4rem;     // 64px
+$spacing-20: 5rem;     // 80px
+$spacing-24: 6rem;     // 96px
+$spacing-32: 8rem;     // 128px
+
+// Alias Semánticos (mantener compatibilidad)
+$spacing-xs: $spacing-1;
+$spacing-sm: $spacing-2;
+$spacing-md: $spacing-4;
+$spacing-lg: $spacing-6;
+$spacing-xl: $spacing-8;
+$spacing-2xl: $spacing-12;
+$spacing-3xl: $spacing-16;
+$spacing-4xl: $spacing-20;
+$spacing-5xl: $spacing-24;
+
+// ============================================
+// CONTENEDORES Y GRID
+// ============================================
+$container-max-width: 1280px;
+$container-max-width-sm: 640px;
+$container-max-width-md: 768px;
+$container-max-width-lg: 1024px;
+$container-max-width-xl: 1280px;
+$container-max-width-2xl: 1536px;
+
+$container-padding: $spacing-4;
+$container-padding-mobile: $spacing-4;
+
+// Grid
+$grid-columns: 12;
+$grid-gutter: $spacing-6;
+$grid-gutter-mobile: $spacing-4;
+
+// ============================================
+// TIPOGRAFÍA PROFESIONAL - Major Third Scale (1.250)
+// ============================================
+
+// Familias de Fuentes
+$font-family-base: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+$font-family-display: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 $font-family-mono: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
 
-$font-size-xs: 0.75rem;
-$font-size-sm: 0.875rem;
-$font-size-base: 1rem;
-$font-size-lg: 1.125rem;
-$font-size-xl: 1.25rem;
-$font-size-2xl: 1.5rem;
-$font-size-3xl: 2rem;
-$font-size-4xl: 2.5rem;
-$font-size-5xl: 3rem;
+// Escala Tipográfica - Major Third (1.250)
+$font-size-xs: 0.64rem;      // 10.24px
+$font-size-sm: 0.8rem;       // 12.8px
+$font-size-base: 1rem;       // 16px (base)
+$font-size-md: 1.125rem;     // 18px
+$font-size-lg: 1.25rem;      // 20px (h6)
+$font-size-xl: 1.563rem;     // 25px (h5)
+$font-size-2xl: 1.953rem;    // 31.25px (h4)
+$font-size-3xl: 2.441rem;    // 39.06px (h3)
+$font-size-4xl: 3.052rem;    // 48.83px (h2)
+$font-size-5xl: 3.815rem;    // 61.04px (h1)
+$font-size-6xl: 4.768rem;    // 76.29px (display)
 
+// Pesos de Fuente
 $font-weight-light: 300;
 $font-weight-normal: 400;
 $font-weight-medium: 500;
 $font-weight-semibold: 600;
 $font-weight-bold: 700;
+$font-weight-extrabold: 800;
 
-$line-height-tight: 1.2;
-$line-height-normal: 1.6;
-$line-height-relaxed: 1.8;
+// Line Heights (Ritmo Vertical)
+$line-height-none: 1;
+$line-height-tight: 1.25;
+$line-height-snug: 1.375;
+$line-height-normal: 1.5;
+$line-height-relaxed: 1.625;
+$line-height-loose: 2;
 
-// Z-Index
-$z-dropdown: 1000;
-$z-sticky: 1000;
-$z-fixed: 1030;
-$z-modal-backdrop: 1040;
-$z-modal: 1050;
-$z-popover: 1060;
-$z-tooltip: 1070;
+// Letter Spacing
+$tracking-tighter: -0.05em;
+$tracking-tight: -0.025em;
+$tracking-normal: 0;
+$tracking-wide: 0.025em;
+$tracking-wider: 0.05em;
+$tracking-widest: 0.1em;
 
-// Breakpoints
-$breakpoint-sm: 640px;
-$breakpoint-md: 768px;
-$breakpoint-lg: 1024px;
-$breakpoint-xl: 1280px;
-$breakpoint-2xl: 1536px;
+// ============================================
+// BREAKPOINTS - Mobile-First
+// ============================================
+$breakpoint-xs: 0;
+$breakpoint-sm: 640px;   // Mobile landscape
+$breakpoint-md: 768px;   // Tablet
+$breakpoint-lg: 1024px;  // Laptop
+$breakpoint-xl: 1280px;  // Desktop
+$breakpoint-2xl: 1536px; // Large desktop
 
-// Transiciones
+// ============================================
+// TRANSICIONES Y ANIMACIONES
+// ============================================
 $transition-fast: 0.15s;
 $transition-base: 0.3s;
 $transition-slow: 0.4s;
@@ -122,31 +233,18 @@ $easing-in: ease-in;
 $easing-out: ease-out;
 $easing-in-out: ease-in-out;
 $easing-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+$easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
-$font-size-base: 1rem;
-$font-size-lg: 1.125rem;
-$font-size-xl: 1.25rem;
-$font-size-2xl: 1.5rem;
-$font-size-3xl: 2rem;
+// Duraciones de Animación
+$duration-fast: 150ms;
+$duration-base: 300ms;
+$duration-slow: 500ms;
+$duration-slower: 700ms;
 
-// Pesos de fuente
-$font-weight-normal: 400;
-$font-weight-medium: 500;
-$font-weight-semibold: 600;
-$font-weight-bold: 700;
-
-// Breakpoints
-$breakpoint-sm: 640px;
-$breakpoint-md: 768px;
-$breakpoint-lg: 1024px;
-$breakpoint-xl: 1280px;
-
-// Transiciones
-$transition-fast: 0.2s ease;
-$transition-base: 0.3s ease;
-$transition-slow: 0.5s ease;
-
-// Z-index
+// ============================================
+// Z-INDEX - Sistema de Capas
+// ============================================
+$z-base: 1;
 $z-dropdown: 1000;
 $z-sticky: 1020;
 $z-fixed: 1030;
@@ -154,19 +252,76 @@ $z-modal-backdrop: 1040;
 $z-modal: 1050;
 $z-popover: 1060;
 $z-tooltip: 1070;
+$z-notification: 1080;
 
-// Dark Mode Variables
+// Dark Mode Colors
 $dark-text-primary: #f9fafb;
 $dark-text-secondary: #d1d5db;
 $dark-bg-primary: #1f2937;
 $dark-bg-secondary: #111827;
 $dark-border-color: #374151;
 
-// CSS Custom Properties (CSS Variables) para uso en runtime
+// ============================================
+// CSS CUSTOM PROPERTIES (Runtime Variables)
+// ============================================
 :root {
+  // Colores Reactivos
+  --responsive-primary: #{$responsive-primary};
+  --responsive-gradient: #{$responsive-gradient};
+  --resilient-primary: #{$resilient-primary};
+  --resilient-gradient: #{$resilient-gradient};
+  --elastic-primary: #{$elastic-primary};
+  --elastic-gradient: #{$elastic-gradient};
+  --message-primary: #{$message-primary};
+  --message-gradient: #{$message-gradient};
+  
+  // Colores Base
   --accent-color: #{$primary-color};
   --accent-color-rgb: #{$accent-color-rgb};
   --secondary-color: #{$secondary-color};
+  --success-color: #{$success-color};
+  --error-color: #{$error-color};
+  --warning-color: #{$warning-color};
+  
+  // Colores de Texto
+  --text-primary: #{$text-dark};
+  --text-secondary: #{$text-light};
+  --text-muted: #{$gray-500};
+  
+  // Backgrounds
+  --bg-primary: #{$bg-white};
+  --bg-secondary: #{$bg-light};
+  --bg-tertiary: #{$gray-100};
+  
+  // Borders
+  --border-color: #{$border-color};
+  --border-color-light: #{$gray-200};
+  --border-color-dark: #{$gray-300};
+  
+  // Shadows
+  --shadow-sm: #{$shadow-sm};
+  --shadow-md: #{$shadow-md};
+  --shadow-lg: #{$shadow-lg};
+  --shadow-xl: #{$shadow-xl};
 }
-$dark-bg-secondary: #111827;
-$dark-border-color: #374151;
+
+// Dark Mode Variables
+[data-theme="dark"] {
+  --text-primary: #{$dark-text-primary};
+  --text-secondary: #{$dark-text-secondary};
+  --text-muted: #{$gray-400};
+  
+  --bg-primary: #{$dark-bg-secondary};
+  --bg-secondary: #{$dark-bg-primary};
+  --bg-tertiary: #{$gray-800};
+  
+  --border-color: #{$dark-border-color};
+  --border-color-light: #{$gray-800};
+  --border-color-dark: #{$gray-700};
+  
+  // Ajustar sombras para dark mode
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+}

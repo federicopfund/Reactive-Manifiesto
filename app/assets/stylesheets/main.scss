@@ -9,7 +9,11 @@
 // 2. Base
 @import 'base';
 
-// 3. Components
+// 3. Layout y Utilidades
+@import 'components/typography';
+@import 'components/layout';
+
+// 4. Components
 @import 'components/navbar';
 @import 'components/buttons';
 @import 'components/forms';
@@ -23,6 +27,6 @@
 @import 'components/publications';
 @import 'components/graph-popup';
 
-// 4. Estilos personalizados adicionales
+// 5. Estilos personalizados adicionales
 // Aquí puedes agregar más componentes según sea necesario
 

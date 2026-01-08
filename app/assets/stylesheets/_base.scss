@@ -2,211 +2,230 @@
 // Base - Reset y Estilos Fundamentales
 // ============================================
 
-* {
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-:root {
-  // Light Mode (Default)
-  --primary-color: #{$primary-color};
-  --primary-dark: #{$primary-dark};
-  --primary-light: #{$primary-light};
-  --secondary-color: #{$secondary-color};
-  --success-color: #{$success-color};
-  --error-color: #{$error-color};
-  --text-dark: #{$text-dark};
-  --text-light: #{$text-light};
-  --text-muted: #9ca3af;
-  --bg-light: #{$bg-light};
-  --bg-white: #{$bg-white};
-  --bg-gradient: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
-  --border-color: #{$border-color};
-  --shadow-sm: #{$shadow-sm};
-  --shadow-md: #{$shadow-md};
-  --shadow-lg: #{$shadow-lg};
-  --shadow-xl: #{$shadow-xl};
-}
-
-// Dark Mode
-[data-theme="dark"] {
-  --primary-color: #818cf8;
-  --primary-dark: #6366f1;
-  --primary-light: #a5b4fc;
-  --secondary-color: #f472b6;
-  --success-color: #34d399;
-  --error-color: #f87171;
-  --text-dark: #f9fafb;
-  --text-light: #d1d5db;
-  --text-muted: #9ca3af;
-  --bg-light: #1f2937;
-  --bg-white: #111827;
-  --bg-gradient: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-  --border-color: #374151;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.6);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.7);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.8);
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 body {
-  font-family: $font-family;
-  color: var(--text-dark);
+  font-family: $font-family-base;
+  font-size: $font-size-base;
+  font-weight: $font-weight-normal;
   line-height: $line-height-normal;
-  background-color: var(--bg-light);
-  transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-              color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  transition: background-color $transition-slow $easing-smooth,
+              color $transition-slow $easing-smooth;
+  min-height: 100vh;
 }
 
-// Typography
+// Scrollbar Styling (Webkit)
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: $border-radius-full;
+  
+  &:hover {
+    background: var(--accent-color);
+  }
+}
+
+// Selection
+::selection {
+  background: var(--accent-color);
+  color: white;
+}
+
+::-moz-selection {
+  background: var(--accent-color);
+  color: white;
+}
+
+// Focus Visible (mejorar accesibilidad)
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+  border-radius: $border-radius-sm;
+}
+
+// Images y Media
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+// Forms
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+// Prevent font size adjustment
+input,
+textarea,
+button,
+select,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+// Tables
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+}
+
+// Remove button default styles
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+// Lists
+ul,
+ol {
+  list-style: none;
+}
+
+// Headings - Se sobrescriben en typography.scss
 h1, h2, h3, h4, h5, h6 {
   font-weight: $font-weight-bold;
   line-height: $line-height-tight;
-  margin-bottom: $spacing-md;
-  color: var(--text-dark);
+  color: var(--text-primary);
 }
 
-h1 { font-size: $font-size-5xl; }
-h2 { font-size: $font-size-3xl; }
-h3 { font-size: $font-size-2xl; }
-h4 { font-size: $font-size-xl; }
-h5 { font-size: $font-size-lg; }
-h6 { font-size: $font-size-base; }
-
-p {
-  margin-bottom: $spacing-md;
-  line-height: $line-height-relaxed;
-}
-
+// Links - Se sobrescriben en typography.scss
 a {
-  color: var(--primary-color);
+  color: var(--accent-color);
   text-decoration: none;
-  @include transition(color);
-
+  transition: color $transition-fast $easing-smooth;
+  
   &:hover {
-    color: var(--primary-dark);
+    color: var(--responsive-primary);
   }
 }
-
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
-// Container
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 $spacing-lg;
-
-  @include respond-to('lg') {
-    padding: 0 $spacing-xl;
-  }
-}
-
-// Utility Classes
-.text-center { text-align: center; }
-.text-left { text-align: left; }
-.text-right { text-align: right; }
-
-.mt-sm { margin-top: $spacing-sm; }
-.mt-md { margin-top: $spacing-md; }
-.mt-lg { margin-top: $spacing-lg; }
-.mt-xl { margin-top: $spacing-xl; }
-
-.mb-sm { margin-bottom: $spacing-sm; }
-.mb-md { margin-bottom: $spacing-md; }
-.mb-lg { margin-bottom: $spacing-lg; }
-.mb-xl { margin-bottom: $spacing-xl; }
 
 // Sections
 section {
-  padding: $spacing-5xl 0;
-}
-
-.section-title {
-  font-size: $font-size-4xl;
-  font-weight: $font-weight-bold;
-  text-align: center;
-  margin-bottom: $spacing-md;
-  color: var(--text-dark);
-}
-
-.section-subtitle {
-  text-align: center;
-  color: var(--text-light);
-  font-size: $font-size-lg;
-  max-width: 700px;
-  margin: 0 auto $spacing-3xl;
-  line-height: $line-height-relaxed;
-}
-
-// Global transitions for theme switching
-*,
-*::before,
-*::after {
-  transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-              border-color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-              color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-// Override for elements with custom transitions
-.btn,
-.card,
-.principle-card,
-.benefit-item,
-.portfolio-card,
-.publication-card {
-  transition: all $transition-slow $easing-smooth;
-}
-
-// Smooth scroll
-html {
-  scroll-behavior: smooth;
-}
-
-// Responsive Typography
-@media (max-width: $breakpoint-md) {
-  h1 { font-size: $font-size-3xl; }
-  h2 { font-size: $font-size-2xl; }
-  h3 { font-size: $font-size-xl; }
+  padding: $spacing-20 0;
   
-  .section-title {
-    font-size: $font-size-3xl;
-  }
-  
-  .section-subtitle {
-    font-size: $font-size-base;
-  }
-  
-  section {
-    padding: $spacing-3xl 0;
+  @media (max-width: $breakpoint-md) {
+    padding: $spacing-12 0;
   }
 }
 
-@media (max-width: $breakpoint-sm) {
-  section {
-    padding: $spacing-2xl 0;
+// Utility: Skip to content (accesibilidad)
+.skip-to-content {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  background: var(--accent-color);
+  color: white;
+  padding: $spacing-2 $spacing-4;
+  text-decoration: none;
+  border-radius: $border-radius-md;
+  z-index: 9999;
+  
+  &:focus {
+    top: $spacing-2;
+    left: $spacing-2;
+  }
+}
+
+// Reduced Motion (accesibilidad)
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+// Global Loading State
+body.loading {
+  overflow: hidden;
+  
+  &::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg-primary);
+    z-index: 9999;
+    opacity: 0.9;
+  }
+}
+
+// Print Styles
+@media print {
+  *,
+  *::before,
+  *::after {
+    background: transparent !important;
+    color: #000 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
   }
   
-  .container {
-    padding: 0 $spacing-md;
+  a,
+  a:visited {
+    text-decoration: underline;
+  }
+  
+  a[href]::after {
+    content: " (" attr(href) ")";
+  }
+  
+  img {
+    page-break-inside: avoid;
+  }
+  
+  p,
+  h2,
+  h3 {
+    orphans: 3;
+    widows: 3;
+  }
+  
+  h2,
+  h3 {
+    page-break-after: avoid;
   }
 }
-
-
-.mt-1 { margin-top: $spacing-sm; }
-.mt-2 { margin-top: $spacing-md; }
-.mt-3 { margin-top: $spacing-lg; }
-.mb-1 { margin-bottom: $spacing-sm; }
-.mb-2 { margin-bottom: $spacing-md; }
-.mb-3 { margin-bottom: $spacing-lg; }
-
-.flex { display: flex; }
-.flex-center { @include flex-center; }
-.flex-between { @include flex-between; }
-
-.hidden { display: none; }
