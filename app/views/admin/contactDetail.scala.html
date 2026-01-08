@@ -68,7 +68,7 @@
                 <label style="display: block; font-weight: 600; color: #666; margin-bottom: 0.5rem;">Fecha de Creación</label>
                 <p style="font-size: 1.1rem; color: #333;">
                     @{
-                        val formatter = java.time.format.DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy 'a las' HH:mm", new java.util.Locale("es"))
+                        val formatter = java.time.format.DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy 'a las' HH:mm", java.util.Locale.forLanguageTag("es"))
                         contact.createdAt.atZone(java.time.ZoneId.systemDefault()).format(formatter)
                     }
                 </p>

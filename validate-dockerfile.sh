@@ -59,7 +59,7 @@ check "Copia archivos del proyecto" "COPY.*project/" "required"
 check "Copia build.sbt" "COPY build.sbt" "required"
 check "Copia código fuente (app)" "COPY app" "required"
 check "Copia configuración (conf)" "COPY conf" "required"
-check "Ejecuta sbt stage" "RUN sbt stage" "required"
+check "Ejecuta sbt stage" "RUN.*sbt.*stage" "required"
 echo ""
 
 echo "5. Verificando copia de artifacts..."

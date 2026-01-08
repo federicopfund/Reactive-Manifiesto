@@ -161,7 +161,7 @@
                     <span class="info-label">📅 Miembro desde:</span>
                     <span class="info-value">
                         @{
-                            val formatter = java.time.format.DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy", new java.util.Locale("es"))
+                            val formatter = java.time.format.DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy", java.util.Locale.forLanguageTag("es"))
                             user.createdAt.atZone(java.time.ZoneId.systemDefault()).format(formatter)
                         }
                     </span>

@@ -346,7 +346,7 @@ class AdminController @Inject()(
 
         // Calcular contactos por usuario activo
         val contactsPerActiveUser = if (activeUsersLast7Days.nonEmpty) {
-          (contactsLast7Days.length.toDouble / activeUsersLast7Days.length).formatted("%.2f")
+          f"${contactsLast7Days.length.toDouble / activeUsersLast7Days.length}%.2f"
         } else "0"
 
         // Tendencia de crecimiento semanal
