@@ -1,0 +1,300 @@
+@(publications: List[models.PublicationWithAuthor])(implicit request: RequestHeader, flash: Flash)
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publicaciones Pendientes - Admin</title>
+    <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/main.css")">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f9fafb;
+            min-height: 100vh;
+        }
+        
+        .admin-header {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .admin-header h1 {
+            font-size: 1.875rem;
+        }
+        
+        .admin-header .breadcrumb {
+            margin-top: 0.5rem;
+            opacity: 0.9;
+        }
+        
+        .admin-header .breadcrumb a {
+            color: white;
+            text-decoration: none;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .flash-message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .flash-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #6ee7b7;
+        }
+        
+        .publications-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+        
+        .publication-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .publication-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .publication-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+        
+        .publication-title {
+            font-size: 1.5rem;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        .publication-meta {
+            display: flex;
+            gap: 1rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+        
+        .publication-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .category-badge {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .publication-excerpt {
+            color: #4b5563;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .tag {
+            background: #f3f4f6;
+            color: #374151;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-view {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-view:hover {
+            background: #2563eb;
+        }
+        
+        .btn-approve {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-approve:hover {
+            background: #059669;
+        }
+        
+        .btn-reject {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-reject:hover {
+            background: #dc2626;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 12px;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.5rem;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        .empty-state p {
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <h1>🔍 Publicaciones Pendientes de Revisión</h1>
+        <div class="breadcrumb">
+            <a href="@routes.AdminController.dashboard(0, None)">Admin</a> / Publicaciones Pendientes
+        </div>
+    </header>
+    
+    <div class="container">
+        @if(flash.get("success").isDefined) {
+            <div class="flash-message flash-success">
+                ✓ @flash.get("success").get
+            </div>
+        }
+        
+        @if(publications.isEmpty) {
+            <div class="empty-state">
+                <h3>✨ No hay publicaciones pendientes</h3>
+                <p>Todas las publicaciones han sido revisadas</p>
+            </div>
+        } else {
+            <div class="publications-grid">
+                @for(pubWithAuthor <- publications) {
+                    @defining(pubWithAuthor.publication) { pub =>
+                        <div class="publication-card">
+                            <div class="publication-header">
+                                <div>
+                                    <h2 class="publication-title">@pub.title</h2>
+                                    <div class="publication-meta">
+                                        <span>👤 @pubWithAuthor.authorFullName (@@@pubWithAuthor.authorUsername)</span>
+                                        <span>📅 @pub.updatedAt.toString.substring(0, 10)</span>
+                                        <span class="category-badge">@pub.category</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            @if(pub.excerpt.isDefined) {
+                                <p class="publication-excerpt">@pub.excerpt.get</p>
+                            }
+                            
+                            @if(pub.tags.isDefined) {
+                                <div class="tags">
+                                    @for(tag <- pub.tags.get.split(",").map(_.trim)) {
+                                        <span class="tag">#@tag</span>
+                                    }
+                                </div>
+                            }
+                            
+                            <div class="action-buttons">
+                                <a href="@routes.AdminController.reviewPublicationDetail(pub.id.get)" class="btn btn-view">
+                                    👁️ Ver Completa
+                                </a>
+                                <form method="POST" action="@routes.AdminController.approvePublication(pub.id.get)" style="display: inline;">
+                                    @helper.CSRF.formField
+                                    <button type="submit" class="btn btn-approve">
+                                        ✓ Aprobar
+                                    </button>
+                                </form>
+                                <button type="button" class="btn btn-reject" data-publication-id="@pub.id.get" onclick="showRejectModal(this.dataset.publicationId)">
+                                    ✗ Rechazar
+                                </button>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        }
+    </div>
+    
+    <!-- Modal para rechazar (simple) -->
+    <div id="rejectModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 500px; width: 90%;">
+            <h3 style="margin-bottom: 1rem;">Rechazar Publicación</h3>
+            <form id="rejectForm" method="POST">
+                @helper.CSRF.formField
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Motivo del rechazo:</label>
+                <textarea name="rejectionReason" rows="4" style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px;" required></textarea>
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <button type="submit" class="btn btn-reject">Confirmar Rechazo</button>
+                    <button type="button" class="btn" style="background: #f3f4f6; color: #374151;" onclick="closeRejectModal()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        function showRejectModal(publicationId) {
+            const modal = document.getElementById('rejectModal');
+            const form = document.getElementById('rejectForm');
+            form.action = '/admin/publications/' + publicationId + '/reject';
+            modal.style.display = 'flex';
+        }
+        
+        function closeRejectModal() {
+            document.getElementById('rejectModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
