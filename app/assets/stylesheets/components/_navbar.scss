@@ -67,7 +67,7 @@
     align-items: center;
     margin-left: auto;
 
-    @media (min-width: $breakpoint-md + 1px) {
+    @media (min-width: $breakpoint-md ) {
       gap: $spacing-md;
     }
 
