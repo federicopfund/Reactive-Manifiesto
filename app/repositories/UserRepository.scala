@@ -18,8 +18,9 @@ class UsersTable(tag: Tag) extends Table[User](tag, "users") {
   def isActive = column[Boolean]("is_active")
   def createdAt = column[Instant]("created_at")
   def lastLogin = column[Option[Instant]]("last_login")
+  def emailVerified = column[Boolean]("email_verified")
 
-  def * = (id.?, username, email, passwordHash, fullName, role, isActive, createdAt, lastLogin).mapTo[User]
+  def * = (id.?, username, email, passwordHash, fullName, role, isActive, createdAt, lastLogin, emailVerified).mapTo[User]
 }
 
 @Singleton
@@ -145,5 +146,13 @@ class UserRepository @Inject()(
    */
   def countNeverLoggedIn(): Future[Int] = {
     db.run(users.filter(u => u.lastLogin.isEmpty && u.isActive).length.result)
+  }
+
+  /**
+   * Actualiza el estado de verificación de email
+   */
+  def updateEmailVerified(id: Long, verified: Boolean): Future[Int] = {
+    val query = users.filter(_.id === id).map(_.emailVerified).update(verified)
+    db.run(query)
   }
 }
