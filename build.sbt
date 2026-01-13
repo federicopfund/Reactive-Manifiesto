@@ -11,6 +11,7 @@ scalaVersion := "2.13.12"
 
 libraryDependencies ++= Seq(
   guice,
+  jdbc, // Play JDBC API
 
   // Reactive Manifesto - Core message-driven
   "com.typesafe.akka" %% "akka-actor-typed" % "2.8.5",
@@ -24,6 +25,9 @@ libraryDependencies ++= Seq(
 
   // BCrypt for password hashing
   "org.mindrot" % "jbcrypt" % "0.4",
+
+  // Email sending
+  "com.sun.mail" % "javax.mail" % "1.6.2",
 
   // Testing
   "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.0" % Test
