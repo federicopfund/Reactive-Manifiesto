@@ -6,24 +6,27 @@ import play.api.data._
 import play.api.data.Forms._
 import play.api.libs.json._
 import scala.concurrent.{ExecutionContext, Future}
-import repositories.{ContactRepository, AdminRepository, UserRepository}
+import repositories.{ContactRepository, AdminRepository, UserRepository, PublicationRepository}
 import models.{ContactRecord, Admin}
+import actions.{AdminOnlyAction, AuthRequest}
 import org.mindrot.jbcrypt.BCrypt
 import java.time.Instant
 
 case class LoginForm(username: String, password: String)
 case class ContactForm(name: String, email: String, message: String)
 case class ContactUpdateForm(id: Long, name: String, email: String, message: String, status: String)
+case class PublicationReviewForm(publicationId: Long, action: String, rejectionReason: Option[String])
 
 @Singleton
 class AdminController @Inject()(
   cc: ControllerComponents,
   contactRepository: ContactRepository,
   adminRepository: AdminRepository,
-  userRepository: UserRepository
+  userRepository: UserRepository,
+  publicationRepository: PublicationRepository,
+  adminAction: AdminOnlyAction
 )(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
-  // Definición de formularios
   val loginForm = Form(
     mapping(
       "username" -> nonEmptyText,
@@ -49,37 +52,23 @@ class AdminController @Inject()(
     )(ContactUpdateForm.apply)(ContactUpdateForm.unapply)
   )
 
-  // Helper para verificar autenticación
-  private def isAuthenticated(request: RequestHeader): Boolean = {
-    request.session.get("adminId").isDefined
-  }
-
-  private def withAuth(block: => Future[Result])(implicit request: RequestHeader): Future[Result] = {
-    if (isAuthenticated(request)) {
-      block
-    } else {
-      Future.successful(Redirect(routes.AdminController.loginPage()).withNewSession)
-    }
-  }
-
   /**
-   * Página de login
+   * Página de login - Redirige al login unificado
    */
   def loginPage(): Action[AnyContent] = Action { implicit request =>
-    // Si ya está logueado, redirigir al dashboard
-    request.session.get("adminId") match {
-      case Some(_) => Redirect(routes.AdminController.dashboard(0, None))
-      case None => Ok(views.html.admin.login(loginForm))
-    }
+    Redirect(routes.AuthController.loginPage())
   }
 
   /**
-   * Procesar login
+   * Procesar login de admin
    */
   def login(): Action[AnyContent] = Action.async { implicit request =>
     loginForm.bindFromRequest().fold(
       formWithErrors => {
-        Future.successful(BadRequest(views.html.admin.login(formWithErrors)))
+        Future.successful(
+          Redirect(routes.AuthController.loginPage())
+            .flashing("error" -> "Error en el formulario. Por favor verifica los datos.")
+        )
       },
       loginData => {
         adminRepository.findByUsername(loginData.username).flatMap {
@@ -87,12 +76,17 @@ class AdminController @Inject()(
             // Actualizar último login
             adminRepository.updateLastLogin(admin.id.get).map { _ =>
               Redirect(routes.AdminController.dashboard(0, None))
-                .withSession("adminId" -> admin.id.get.toString, "adminUsername" -> admin.username)
+                .withSession(
+                  "userId" -> admin.id.get.toString,
+                  "username" -> admin.username,
+                  "userRole" -> "admin"
+                )
                 .flashing("success" -> s"Bienvenido, ${admin.username}")
             }
           case _ =>
             Future.successful(
-              Unauthorized(views.html.admin.login(loginForm.withGlobalError("Credenciales inválidas")))
+              Redirect(routes.AuthController.loginPage())
+                .flashing("error" -> "Credenciales de administrador inválidas")
             )
         }
       }
@@ -103,167 +97,147 @@ class AdminController @Inject()(
    * Logout
    */
   def logout(): Action[AnyContent] = Action { implicit request =>
-    Redirect(routes.AdminController.loginPage()).withNewSession.flashing("success" -> "Sesión cerrada")
+    Redirect(routes.AuthController.loginPage()).withNewSession.flashing("success" -> "Sesión cerrada")
   }
 
   /**
    * Dashboard principal
    */
-  def dashboard(page: Int, search: Option[String]): Action[AnyContent] = Action.async { implicit request =>
-    withAuth {
-      val username = request.session.get("adminUsername").getOrElse("Admin")
-      
-      for {
-        contacts <- contactRepository.listAll()
-        totalCount <- contactRepository.count()
-      } yield {
-        val filteredContacts = search match {
-          case Some(query) if query.nonEmpty =>
-            contacts.filter(c =>
-              c.name.toLowerCase.contains(query.toLowerCase) ||
-              c.email.toLowerCase.contains(query.toLowerCase) ||
-              c.message.toLowerCase.contains(query.toLowerCase)
-            )
-          case _ => contacts
-        }
-        
-        val pageSize = 10
-        val offset = page * pageSize
-        val paginatedContacts = filteredContacts.slice(offset, offset + pageSize)
-        val totalPages = Math.ceil(filteredContacts.length.toDouble / pageSize).toInt
-        
-        Ok(views.html.admin.dashboard(paginatedContacts, username, page, totalPages, search))
+  def dashboard(page: Int, search: Option[String]): Action[AnyContent] = adminAction.async { implicit request: AuthRequest[AnyContent] =>
+    for {
+      contacts <- contactRepository.listAll()
+      totalCount <- contactRepository.count()
+    } yield {
+      val filteredContacts = search match {
+        case Some(query) if query.nonEmpty =>
+          contacts.filter(c =>
+            c.name.toLowerCase.contains(query.toLowerCase) ||
+            c.email.toLowerCase.contains(query.toLowerCase) ||
+            c.message.toLowerCase.contains(query.toLowerCase)
+          )
+        case _ => contacts
       }
+      
+      val pageSize = 10
+      val offset = page * pageSize
+      val paginatedContacts = filteredContacts.slice(offset, offset + pageSize)
+      val totalPages = Math.ceil(filteredContacts.length.toDouble / pageSize).toInt
+      
+      Ok(views.html.admin.dashboard(paginatedContacts, request.username, page, totalPages, search))
     }
   }
 
   /**
    * Vista de estadísticas avanzadas
    */
-  def statisticsPage(): Action[AnyContent] = Action.async { implicit request =>
-    withAuth {
-      val username = request.session.get("adminUsername").getOrElse("Admin")
-      Future.successful(Ok(views.html.admin.statistics(username)))
-    }
+  def statisticsPage(): Action[AnyContent] = adminAction.async { implicit request: AuthRequest[AnyContent] =>
+    val username = request.username
+    Future.successful(Ok(views.html.admin.statistics(username)))
   }
 
   /**
    * Ver detalle de un contacto
    */
-  def viewContact(id: Long): Action[AnyContent] = Action.async { implicit request =>
-    withAuth {
-      contactRepository.findById(id).map {
-        case Some(contact) => Ok(views.html.admin.contactDetail(contact))
-        case None => NotFound("Contacto no encontrado")
-      }
+  def viewContact(id: Long): Action[AnyContent] = adminAction.async { implicit request: AuthRequest[AnyContent] =>
+    contactRepository.findById(id).map {
+      case Some(contact) => Ok(views.html.admin.contactDetail(contact))
+      case None => NotFound("Contacto no encontrado")
     }
   }
 
   /**
    * Página para crear nuevo contacto
    */
-  def createContactPage(): Action[AnyContent] = Action { implicit request =>
-    if (isAuthenticated(request)) {
-      Ok(views.html.admin.contactForm(contactForm, None))
-    } else {
-      Redirect(routes.AdminController.loginPage()).withNewSession
-    }
+  def createContactPage(): Action[AnyContent] = adminAction { implicit request: AuthRequest[AnyContent] =>
+    Ok(views.html.admin.contactForm(contactForm, None))
   }
 
   /**
    * Crear nuevo contacto
    */
-  def createContact(): Action[AnyContent] = Action.async { implicit request =>
-    withAuth {
-      contactForm.bindFromRequest().fold(
-        formWithErrors => {
-          Future.successful(BadRequest(views.html.admin.contactForm(formWithErrors, None)))
-        },
-        contactData => {
-          val newContact = ContactRecord(
-            id = None,
-            name = contactData.name,
-            email = contactData.email,
-            message = contactData.message,
-            createdAt = Instant.now(),
-            status = "pending"
-          )
-          contactRepository.save(newContact).map { _ =>
-            Redirect(routes.AdminController.dashboard(0, None))
-              .flashing("success" -> "Contacto creado exitosamente")
-          }
+  def createContact(): Action[AnyContent] = adminAction.async { implicit request: AuthRequest[AnyContent] =>
+    contactForm.bindFromRequest().fold(
+      formWithErrors => {
+        Future.successful(BadRequest(views.html.admin.contactForm(formWithErrors, None)))
+      },
+      contactData => {
+        val newContact = ContactRecord(
+          id = None,
+          name = contactData.name,
+          email = contactData.email,
+          message = contactData.message,
+          createdAt = Instant.now(),
+          status = "pending"
+        )
+        contactRepository.save(newContact).map { _ =>
+          Redirect(routes.AdminController.dashboard(0, None))
+            .flashing("success" -> "Contacto creado exitosamente")
         }
-      )
-    }
+      }
+    )
   }
 
   /**
    * Página para editar contacto
    */
-  def editContactPage(id: Long): Action[AnyContent] = Action.async { implicit request =>
-    withAuth {
-      contactRepository.findById(id).map {
-        case Some(contact) =>
-          val filledForm = contactUpdateForm.fill(ContactUpdateForm(
-            contact.id.get,
-            contact.name,
-            contact.email,
-            contact.message,
-            contact.status
-          ))
-          Ok(views.html.admin.contactEdit(filledForm, contact))
-        case None => NotFound("Contacto no encontrado")
-      }
+  def editContactPage(id: Long): Action[AnyContent] = adminAction.async { implicit request: AuthRequest[AnyContent] =>
+    contactRepository.findById(id).map {
+      case Some(contact) =>
+        val filledForm = contactUpdateForm.fill(ContactUpdateForm(
+          contact.id.get,
+          contact.name,
+          contact.email,
+          contact.message,
+          contact.status
+        ))
+        Ok(views.html.admin.contactEdit(filledForm, contact))
+      case None => NotFound("Contacto no encontrado")
     }
   }
 
   /**
    * Actualizar contacto
    */
-  def updateContact(id: Long): Action[AnyContent] = Action.async { implicit request =>
-    withAuth {
-      contactUpdateForm.bindFromRequest().fold(
-        formWithErrors => {
-          contactRepository.findById(id).map {
-            case Some(contact) => BadRequest(views.html.admin.contactEdit(formWithErrors, contact))
-            case None => NotFound("Contacto no encontrado")
-          }
-        },
-        updateData => {
-          val updatedContact = ContactRecord(
-            id = Some(id),
-            name = updateData.name,
-            email = updateData.email,
-            message = updateData.message,
-            createdAt = Instant.now(),
-            status = updateData.status
-          )
-          
-          contactRepository.update(id, updatedContact).map { count =>
-            if (count > 0) {
-              Redirect(routes.AdminController.dashboard(0, None))
-                .flashing("success" -> "Contacto actualizado exitosamente")
-            } else {
-              NotFound("Contacto no encontrado")
-            }
+  def updateContact(id: Long): Action[AnyContent] = adminAction.async { implicit request: AuthRequest[AnyContent] =>
+    contactUpdateForm.bindFromRequest().fold(
+      formWithErrors => {
+        contactRepository.findById(id).map {
+          case Some(contact) => BadRequest(views.html.admin.contactEdit(formWithErrors, contact))
+          case None => NotFound("Contacto no encontrado")
+        }
+      },
+      updateData => {
+        val updatedContact = ContactRecord(
+          id = Some(id),
+          name = updateData.name,
+          email = updateData.email,
+          message = updateData.message,
+          createdAt = Instant.now(),
+          status = updateData.status
+        )
+        
+        contactRepository.update(id, updatedContact).map { count =>
+          if (count > 0) {
+            Redirect(routes.AdminController.dashboard(0, None))
+              .flashing("success" -> "Contacto actualizado exitosamente")
+          } else {
+            NotFound("Contacto no encontrado")
           }
         }
-      )
-    }
+      }
+    )
   }
 
   /**
    * Eliminar contacto
    */
-  def deleteContact(id: Long): Action[AnyContent] = Action.async { implicit request =>
-    withAuth {
-      contactRepository.delete(id).map { count =>
-        if (count > 0) {
-          Redirect(routes.AdminController.dashboard(0, None))
-            .flashing("success" -> "Contacto eliminado exitosamente")
-        } else {
-          NotFound("Contacto no encontrado")
-        }
+  def deleteContact(id: Long): Action[AnyContent] = adminAction.async { implicit request: AuthRequest[AnyContent] =>
+    contactRepository.delete(id).map { count =>
+      if (count > 0) {
+        Redirect(routes.AdminController.dashboard(0, None))
+          .flashing("success" -> "Contacto eliminado exitosamente")
+      } else {
+        NotFound("Contacto no encontrado")
       }
     }
   }
@@ -271,14 +245,12 @@ class AdminController @Inject()(
   /**
    * API JSON para actualizar estado rápidamente
    */
-  def updateStatus(id: Long, status: String): Action[AnyContent] = Action.async { implicit request =>
-    withAuth {
-      contactRepository.updateStatus(id, status).map { count =>
-        if (count > 0) {
-          Ok(Json.obj("success" -> true, "message" -> "Estado actualizado"))
-        } else {
-          NotFound(Json.obj("success" -> false, "message" -> "Contacto no encontrado"))
-        }
+  def updateStatus(id: Long, status: String): Action[AnyContent] = adminAction.async { implicit request: AuthRequest[AnyContent] =>
+    contactRepository.updateStatus(id, status).map { count =>
+      if (count > 0) {
+        Ok(Json.obj("success" -> true, "message" -> "Estado actualizado"))
+      } else {
+        NotFound(Json.obj("success" -> false, "message" -> "Contacto no encontrado"))
       }
     }
   }
@@ -286,53 +258,50 @@ class AdminController @Inject()(
   /**
    * Estadísticas del dashboard
    */
-  def stats(): Action[AnyContent] = Action.async { implicit request =>
-    withAuth {
-      for {
-        totalCount <- contactRepository.count()
-        allContacts <- contactRepository.listAll()
-      } yield {
-        val pendingCount = allContacts.count(_.status == "pending")
-        val processedCount = allContacts.count(_.status == "processed")
-        val archivedCount = allContacts.count(_.status == "archived")
-        
-        Ok(Json.obj(
-          "total" -> totalCount,
-          "pending" -> pendingCount,
-          "processed" -> processedCount,
-          "archived" -> archivedCount
-        ))
-      }
+  def stats(): Action[AnyContent] = adminAction.async { implicit request: AuthRequest[AnyContent] =>
+    for {
+      totalCount <- contactRepository.count()
+      allContacts <- contactRepository.listAll()
+    } yield {
+      val pendingCount = allContacts.count(_.status == "pending")
+      val processedCount = allContacts.count(_.status == "processed")
+      val archivedCount = allContacts.count(_.status == "archived")
+      
+      Ok(Json.obj(
+        "total" -> totalCount,
+        "pending" -> pendingCount,
+        "processed" -> processedCount,
+        "archived" -> archivedCount
+      ))
     }
   }
 
   /**
    * Estadísticas avanzadas para el dashboard profesional
    */
-  def advancedStats(): Action[AnyContent] = Action.async { implicit request =>
-    withAuth {
-      for {
-        // Estadísticas de usuarios
-        totalUsers <- userRepository.count()
-        allUsers <- userRepository.listAll()
-        usersByRole <- userRepository.countByRole()
-        usersLast7Days <- userRepository.getUsersRegisteredInLastDays(7)
-        usersLast30Days <- userRepository.getUsersRegisteredInLastDays(30)
-        activeUsersLast7Days <- userRepository.getActiveUsersInLastDays(7)
-        neverLoggedIn <- userRepository.countNeverLoggedIn()
+  def advancedStats(): Action[AnyContent] = adminAction.async { implicit request: AuthRequest[AnyContent] =>
+    for {
+      // Estadísticas de usuarios
+      totalUsers <- userRepository.count()
+      allUsers <- userRepository.listAll()
+      usersByRole <- userRepository.countByRole()
+      usersLast7Days <- userRepository.getUsersRegisteredInLastDays(7)
+      usersLast30Days <- userRepository.getUsersRegisteredInLastDays(30)
+      activeUsersLast7Days <- userRepository.getActiveUsersInLastDays(7)
+      neverLoggedIn <- userRepository.countNeverLoggedIn()
 
-        // Estadísticas de contactos
-        totalContacts <- contactRepository.count()
-        allContacts <- contactRepository.listAll()
-        contactsByStatus <- contactRepository.countByStatus()
-        contactsLast7Days <- contactRepository.getContactsInLastDays(7)
-        contactsLast30Days <- contactRepository.getContactsInLastDays(30)
+      // Estadísticas de contactos
+      totalContacts <- contactRepository.count()
+      allContacts <- contactRepository.listAll()
+      contactsByStatus <- contactRepository.countByStatus()
+      contactsLast7Days <- contactRepository.getContactsInLastDays(7)
+      contactsLast30Days <- contactRepository.getContactsInLastDays(30)
 
-        // Estadísticas de administradores
-        totalAdmins <- adminRepository.count()
-        allAdmins <- adminRepository.listAll()
+      // Estadísticas de administradores
+      totalAdmins <- adminRepository.count()
+      allAdmins <- adminRepository.listAll()
 
-      } yield {
+    } yield {
         // Calcular métricas de tiempo promedio
         val now = Instant.now()
         val avgUserAge = if (allUsers.nonEmpty) {
@@ -411,6 +380,84 @@ class AdminController @Inject()(
           )
         ))
       }
+  }
+
+  // ============================================
+  // GESTIÓN DE PUBLICACIONES
+  // ============================================
+
+  /**
+   * Ver publicaciones pendientes de aprobación
+   */
+  def pendingPublications = adminAction.async { implicit request: AuthRequest[AnyContent] =>
+    publicationRepository.findPending().map { publications =>
+      Ok(views.html.admin.publicationReview(publications))
+    }
+  }
+
+  /**
+   * Ver detalle de una publicación para revisión
+   */
+  def reviewPublicationDetail(id: Long) = adminAction.async { implicit request: AuthRequest[AnyContent] =>
+    publicationRepository.findById(id).map {
+      case Some(publication) =>
+        Ok(views.html.admin.publicationDetail(publication))
+      case None =>
+        NotFound("Publicación no encontrada")
+    }
+  }
+
+  /**
+   * Aprobar una publicación
+   */
+  def approvePublication(id: Long) = adminAction.async { implicit request: AuthRequest[AnyContent] =>
+    val adminId = request.userId
+    publicationRepository.changeStatus(id, "approved", adminId).map { success =>
+      if (success) {
+        Redirect(routes.AdminController.pendingPublications())
+          .flashing("success" -> "Publicación aprobada exitosamente")
+      } else {
+        BadRequest("Error al aprobar la publicación")
+      }
+    }
+  }
+
+  /**
+   * Rechazar una publicación
+   */
+  def rejectPublication(id: Long) = adminAction.async { implicit request: AuthRequest[AnyContent] =>
+    val rejectionReason = request.body.asFormUrlEncoded
+      .flatMap(_.get("rejectionReason"))
+      .flatMap(_.headOption)
+      .getOrElse("No cumple con los estándares de calidad")
+    
+    val adminId = request.userId
+    publicationRepository.changeStatus(id, "rejected", adminId, Some(rejectionReason)).map { success =>
+      if (success) {
+        Redirect(routes.AdminController.pendingPublications())
+          .flashing("success" -> "Publicación rechazada")
+      } else {
+        BadRequest("Error al rechazar la publicación")
+      }
+    }
+  }
+
+  /**
+   * API: Listar todas las publicaciones (para admin)
+   */
+  def listAllPublicationsJson = adminAction.async { implicit request: AuthRequest[AnyContent] =>
+    publicationRepository.findPending().map { publications =>
+      Ok(Json.toJson(publications.map { pubWithAuthor =>
+        Json.obj(
+          "id" -> pubWithAuthor.publication.id,
+          "title" -> pubWithAuthor.publication.title,
+          "author" -> pubWithAuthor.authorUsername,
+          "status" -> pubWithAuthor.publication.status,
+          "category" -> pubWithAuthor.publication.category,
+          "createdAt" -> pubWithAuthor.publication.createdAt.toString,
+          "updatedAt" -> pubWithAuthor.publication.updatedAt.toString
+        )
+      }))
     }
   }
 }
