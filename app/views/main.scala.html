@@ -1,4 +1,4 @@
-@(title: String)(content: Html)
+@(title: String)(content: Html)(implicit request: RequestHeader)
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -32,7 +32,13 @@
                 <a href="@routes.HomeController.publicaciones()" class="nav-link">Publicaciones</a>
                 <a href="@routes.HomeController.portafolio()" class="nav-link">Portafolio</a>
                 <a href="@routes.HomeController.index()#contact" class="nav-link">Contacto</a>
-                <a href="@routes.AuthController.loginPage()" class="nav-link nav-link-login">🔐 Login</a>
+                @if(request.session.get("userId").isDefined) {
+                    <a href="@routes.AuthController.userDashboard()" class="nav-link nav-link-dashboard">👤 Dashboard</a>
+                    <a href="@routes.UserPublicationController.dashboard()" class="nav-link nav-link-publications">📝 Mis Publicaciones</a>
+                    <a href="@routes.AuthController.logout()" class="nav-link nav-link-logout">🚪 Logout</a>
+                } else {
+                    <a href="@routes.AuthController.loginPage()" class="nav-link nav-link-login">🔐 Login</a>
+                }
                 
                 <!-- Theme Toggle (visible en desktop) -->
                 <button class="theme-toggle navbar-theme-toggle" id="theme-toggle-desktop" aria-label="Cambiar tema">
