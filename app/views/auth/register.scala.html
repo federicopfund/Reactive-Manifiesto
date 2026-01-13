@@ -1,234 +1,118 @@
 @(registerForm: Form[controllers.UserRegisterForm])(implicit request: RequestHeader, flash: Flash)
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro - Reactive Manifesto</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-        }
-        
-        .register-container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 500px;
-            width: 100%;
-            overflow: hidden;
-            animation: fadeIn 0.5s ease-out;
-        }
-        
-        .register-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 2.5rem 2rem;
-            text-align: center;
-        }
-        
-        .register-header h1 {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .register-body {
-            padding: 2.5rem 2rem;
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #333;
-            font-weight: 500;
-        }
-        
-        input {
-            width: 100%;
-            padding: 0.875rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-        
-        input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        .btn-register {
-            width: 100%;
-            padding: 1rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-            margin-top: 1rem;
-        }
-        
-        .btn-register:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-        }
-        
-        .error {
-            background: #fee;
-            border: 1px solid #fcc;
-            color: #c33;
-            padding: 0.5rem;
-            border-radius: 4px;
-            margin-top: 0.5rem;
-            font-size: 0.9rem;
-        }
-        
-        .links {
-            text-align: center;
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid #e0e0e0;
-        }
-        
-        .links a {
-            color: #667eea;
-            text-decoration: none;
-        }
-        
-        .links a:hover {
-            text-decoration: underline;
-        }
-        
-        @@keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="register-container">
-        <div class="register-header">
-            <h1>✨ Crear Cuenta</h1>
-            <p>Únete a Reactive Manifesto</p>
-        </div>
-        
-        <div class="register-body">
-            @if(registerForm.hasGlobalErrors) {
-                <div class="error">
-                    @registerForm.globalErrors.map(_.message).mkString(", ")
-                </div>
-            }
+@main("Crear Cuenta") {
+    <div class="auth-page">
+        <div class="register-container">
+            <div class="register-header">
+                <span class="header-icon">✨</span>
+                <h1>Crear Cuenta</h1>
+                <p>Únete a Reactive Manifesto</p>
+            </div>
             
-            <form method="POST" action="@routes.AuthController.register()">
-                @helper.CSRF.formField
+            <div class="register-body">
+                @flash.get("success").map { msg =>
+                    <div class="flash-message success">@msg</div>
+                }
+                @flash.get("error").map { msg =>
+                    <div class="flash-message error">@msg</div>
+                }
+                @flash.get("info").map { msg =>
+                    <div class="flash-message info">@msg</div>
+                }
                 
-                <div class="form-group">
-                    <label for="fullName">Nombre Completo</label>
-                    <input 
-                        type="text" 
-                        id="fullName" 
-                        name="fullName" 
-                        required 
-                        autofocus
-                        placeholder="Juan Pérez"
-                        value="@registerForm("fullName").value.getOrElse("")"
-                    />
-                    @if(registerForm("fullName").hasErrors) {
-                        <div class="error">@registerForm("fullName").errors.map(_.message).mkString(", ")</div>
-                    }
+                @if(registerForm.hasGlobalErrors) {
+                    <div class="error">
+                        @registerForm.globalErrors.map(_.message).mkString(", ")
+                    </div>
+                }
+                
+                <form method="POST" action="@routes.AuthController.register()">
+                    @helper.CSRF.formField
+                    
+                    <div class="form-group">
+                        <label for="fullName">Nombre Completo</label>
+                        <input 
+                            type="text" 
+                            id="fullName" 
+                            name="fullName" 
+                            placeholder="Juan Pérez"
+                            value="@registerForm("fullName").value.getOrElse("")"
+                            required 
+                            autofocus
+                        >
+                        @if(registerForm("fullName").hasErrors) {
+                            <div class="error">@registerForm("fullName").errors.map(_.message).mkString(", ")</div>
+                        }
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="username">Nombre de Usuario</label>
+                        <input 
+                            type="text" 
+                            id="username" 
+                            name="username" 
+                            placeholder="usuario123"
+                            value="@registerForm("username").value.getOrElse("")"
+                            required
+                        >
+                        @if(registerForm("username").hasErrors) {
+                            <div class="error">@registerForm("username").errors.map(_.message).mkString(", ")</div>
+                        }
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            placeholder="correo@@example.com"
+                            value="@registerForm("email").value.getOrElse("")"
+                            required
+                        >
+                        @if(registerForm("email").hasErrors) {
+                            <div class="error">@registerForm("email").errors.map(_.message).mkString(", ")</div>
+                        }
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Contraseña</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            placeholder="Mínimo 6 caracteres"
+                            required
+                        >
+                        @if(registerForm("password").hasErrors) {
+                            <div class="error">@registerForm("password").errors.map(_.message).mkString(", ")</div>
+                        }
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirmar Contraseña</label>
+                        <input 
+                            type="password" 
+                            id="confirmPassword" 
+                            name="confirmPassword" 
+                            placeholder="Repite tu contraseña"
+                            required
+                        >
+                        @if(registerForm("confirmPassword").hasErrors) {
+                            <div class="error">@registerForm("confirmPassword").errors.map(_.message).mkString(", ")</div>
+                        }
+                    </div>
+                    
+                    <button type="submit" class="btn-register">Crear Cuenta</button>
+                </form>
+                
+                <div class="links">
+                    <p>¿Ya tienes cuenta?</p>
+                    <a href="@routes.AuthController.loginPage()">Iniciar sesión →</a>
+                    <span style="margin: 0 10px;">|</span>
+                    <a href="@routes.HomeController.index()">Volver al inicio →</a>
                 </div>
-                
-                <div class="form-group">
-                    <label for="username">Nombre de Usuario</label>
-                    <input 
-                        type="text" 
-                        id="username" 
-                        name="username" 
-                        required
-                        placeholder="usuario123"
-                        value="@registerForm("username").value.getOrElse("")"
-                    />
-                    @if(registerForm("username").hasErrors) {
-                        <div class="error">@registerForm("username").errors.map(_.message).mkString(", ")</div>
-                    }
-                </div>
-                
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input 
-                        type="email" 
-                        id="email" 
-                        name="email" 
-                        required
-                        placeholder="correo@@example.com"
-                        value="@registerForm("email").value.getOrElse("")"
-                    />
-                    @if(registerForm("email").hasErrors) {
-                        <div class="error">@registerForm("email").errors.map(_.message).mkString(", ")</div>
-                    }
-                </div>
-                
-                <div class="form-group">
-                    <label for="password">Contraseña</label>
-                    <input 
-                        type="password" 
-                        id="password" 
-                        name="password" 
-                        required
-                        placeholder="Mínimo 6 caracteres"
-                    />
-                    @if(registerForm("password").hasErrors) {
-                        <div class="error">@registerForm("password").errors.map(_.message).mkString(", ")</div>
-                    }
-                </div>
-                
-                <div class="form-group">
-                    <label for="confirmPassword">Confirmar Contraseña</label>
-                    <input 
-                        type="password" 
-                        id="confirmPassword" 
-                        name="confirmPassword" 
-                        required
-                        placeholder="Repite tu contraseña"
-                    />
-                    @if(registerForm("confirmPassword").hasErrors) {
-                        <div class="error">@registerForm("confirmPassword").errors.map(_.message).mkString(", ")</div>
-                    }
-                </div>
-                
-                <button type="submit" class="btn-register">Crear Cuenta</button>
-            </form>
-            
-            <div class="links">
-                <a href="@routes.AuthController.loginPage()">¿Ya tienes cuenta? Inicia sesión</a>
             </div>
         </div>
     </div>
-</body>
-</html>
+}
