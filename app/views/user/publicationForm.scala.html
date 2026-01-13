@@ -1,0 +1,175 @@
+@(form: Form[controllers.PublicationFormData], publication: Option[models.Publication], username: String)(implicit request: RequestHeader, flash: Flash)
+
+@main(if(publication.isDefined) "Editar Publicación" else "Nueva Publicación") {
+    <div class="publication-page">
+        <nav class="publication-navbar">
+            <h1>@if(publication.isDefined) {✏️ Editar} else {✨ Nueva} Publicación</h1>
+            <a href="@routes.UserPublicationController.dashboard()">← Volver al Dashboard</a>
+        </nav>
+        
+        <div class="publication-form-container">
+        
+        <div class="publication-form-container">
+            <div class="form-card">
+                <h2>@if(publication.isDefined) { Editar Publicación } else { Crear Nueva Publicación }</h2>
+                
+                @if(publication.isDefined) {
+                    <div class="publication-info">
+                        <div class="info-header">
+                            <span class="icon">📄</span>
+                            <h3>Información de la Publicación</h3>
+                        </div>
+                        <div class="info-content">
+                            <p><strong>Estado:</strong> <span class="status-badge @publication.get.status.toLowerCase">@publication.get.status</span></p>
+                            <p><strong>Creada:</strong> @publication.get.createdAt.toString.substring(0, 10)</p>
+                            <p><strong>Última actualización:</strong> @publication.get.updatedAt.toString.substring(0, 10)</p>
+                        </div>
+                    </div>
+                }
+                
+                @if(form.hasGlobalErrors) {
+                    <div class="error">
+                        @form.globalErrors.map(_.message).mkString(", ")
+                    </div>
+                }
+                
+                <form method="POST" action="@if(publication.isDefined) { @routes.UserPublicationController.updatePublication(publication.get.id.get) } else { @routes.UserPublicationController.createPublication() }" class="publication-form">
+                    @helper.CSRF.formField
+                    
+                    <div class="form-group">
+                        <label for="title">
+                            Título <span class="required">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="title" 
+                            name="title" 
+                            value="@form("title").value.getOrElse("")"
+                            placeholder="Ej: Introducción a Akka Actors"
+                            required
+                            autofocus
+                        />
+                        <div class="help-text">Mínimo 5 caracteres, máximo 200. Este será el título principal de tu publicación.</div>
+                        @if(form("title").hasErrors) {
+                            <div class="error">@form("title").errors.map(_.message).mkString(", ")</div>
+                        }
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="category">
+                                Categoría <span class="required">*</span>
+                            </label>
+                            <select id="category" name="category" required>
+                                <option value="">Selecciona una categoría</option>
+                                <option value="Scala" @if(form("category").value.contains("Scala")) { selected }>Scala</option>
+                                <option value="Akka" @if(form("category").value.contains("Akka")) { selected }>Akka</option>
+                                <option value="Play Framework" @if(form("category").value.contains("Play Framework")) { selected }>Play Framework</option>
+                                <option value="Reactive Streams" @if(form("category").value.contains("Reactive Streams")) { selected }>Reactive Streams</option>
+                                <option value="Arquitectura" @if(form("category").value.contains("Arquitectura")) { selected }>Arquitectura</option>
+                                <option value="Patterns" @if(form("category").value.contains("Patterns")) { selected }>Patterns</option>
+                                <option value="Testing" @if(form("category").value.contains("Testing")) { selected }>Testing</option>
+                                <option value="DevOps" @if(form("category").value.contains("DevOps")) { selected }>DevOps</option>
+                            </select>
+                            <div class="help-text">Selecciona la categoría más apropiada</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="tags">
+                                Etiquetas
+                            </label>
+                            <div class="tags-input-wrapper">
+                                <input 
+                                    type="text" 
+                                    id="tags" 
+                                    name="tags" 
+                                    value="@form("tags").value.getOrElse("")"
+                                    placeholder="scala, akka, reactive, actors"
+                                />
+                            </div>
+                            <div class="help-text">Separadas por comas. <strong>Mejora el SEO</strong></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="excerpt">
+                            Extracto / Descripción
+                        </label>
+                        <textarea 
+                            id="excerpt" 
+                            name="excerpt" 
+                            rows="4"
+                            placeholder="Breve descripción de la publicación (máximo 500 caracteres)"
+                        >@form("excerpt").value.getOrElse("")</textarea>
+                        <div class="help-text">Opcional - Se mostrará en listados y vistas previas. <code>Máx. 500 caracteres</code></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="content">
+                            Contenido <span class="required">*</span>
+                        </label>
+                        <textarea 
+                            id="content" 
+                            name="content" 
+                            required
+                            placeholder="Escribe el contenido de tu publicación aquí...
+
+# Encabezado Principal
+## Subtítulo
+
+Puedes usar **negrita**, *cursiva*, y `código inline`.
+
+```scala
+// Bloques de código
+val example = 'Hello World'
+```
+
+- Lista elemento 1
+- Lista elemento 2
+
+¡Markdown soportado!"
+                        >@form("content").value.getOrElse("")</textarea>
+                        <div class="help-text">
+                            Mínimo 50 caracteres. <strong>Soporta Markdown</strong> para formateo rico.
+                            <code>```scala</code> para bloques de código.
+                        </div>
+                        @if(form("content").hasErrors) {
+                            <div class="error">@form("content").errors.map(_.message).mkString(", ")</div>
+                        }
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="coverImage">
+                            Imagen de Portada (URL)
+                        </label>
+                        <input 
+                            type="url" 
+                            id="coverImage" 
+                            name="coverImage" 
+                            value="@form("coverImage").value.getOrElse("")"
+                            placeholder="https://ejemplo.com/imagen.jpg"
+                        />
+                        <div class="help-text">
+                            Opcional - URL de la imagen de portada. Recomendado: <strong>1200x630px</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z"/>
+                            </svg>
+                            @if(publication.isDefined) { Actualizar Publicación } else { Crear Publicación }
+                        </button>
+                        <a href="@routes.UserPublicationController.dashboard()" class="btn btn-secondary">
+                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                            </svg>
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
